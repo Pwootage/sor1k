@@ -27,11 +27,19 @@ import collection.mutable
  * OpenRisc 1000 register set
  */
 class Registers {
+  reset() //"reset" to init
+
+  var pc = 0
+
   /** General purpose registers (16 sets of 32) */
   val gp = new Array[Int](16 * 32)
 
   /** Get GPR for current context */
-  def gpCtx(ind: Int) = gp(sr.cid * 32 + ind)
+  object gpCtx {
+    def apply(ind: Int) = gp(sr.cid * 32 + ind)
+
+    def update(ind: Int, v: Int) = gp(sr.cid * 32 + ind) = _
+  }
 
   val spr = new Array[mutable.Map[Int, SpecialPurposeRegister]](32)
 
@@ -126,8 +134,13 @@ class Registers {
 
   }
 
-
   def reset(): Unit = {
-
+    sr() = 0 |
+      (1 << 15) | //FO
+      (1 << 0) //Supervisor Mode
+    for (i <- 0 to gp.size) gp(i) = 0
+    epcr.foreach(_.set(0))
+    eear.foreach(_.set(0))
+    esrr.foreach(_.set(0))
   }
 }

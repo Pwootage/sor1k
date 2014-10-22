@@ -21,15 +21,27 @@
 package com.pwootage.sor1k.cpu
 
 /**
- * Contains interpreted implementations of OpenRISC instructions
+ * Constants for instruction codes as well as instruction decoder
  */
-class OR1KInterpretedInstructions(or1k: OR1K) {
-  val reg = or1k.reg
-  val mmu = or1k.mmu
+object InstructionCodes {
 
-  import InstructionCodes._
-  def add(instr: Int) = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) + reg.gpCtx(instr.regB)
-    //TODO: Carry/Overflow if I can do that fast
+  object L {
+    val Add = (0x38, 0x0, 0x0)
+    val Addc = (0x38, 0x0, 0x1)
+  }
+
+  //these methods *should* be inlined by compiler/jvm
+  implicit class Instruction(instr: Int) {
+    def opcode = (instr >>> 26) & 0x3f
+
+    def opcode2 = (instr >>> 8) & 0x3
+
+    def opcode4 = (instr >>> 0) & 0xF
+
+    def regD = (instr >>> 21) & 0x1F
+
+    def regA = (instr >>> 16) & 0x1F
+
+    def regB = (instr >>> 11) & 0x1F
   }
 }

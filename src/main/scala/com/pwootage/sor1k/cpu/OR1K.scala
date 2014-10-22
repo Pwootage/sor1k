@@ -21,11 +21,12 @@
 package com.pwootage.sor1k.cpu
 
 import com.pwootage.sor1k.memory.MMU
+import com.pwootage.sor1k.registers.Registers
 
 /**
  * CPU core for OpenRisc 1000
  */
-class OR1K(val mmu: MMU) {
+class OR1K(val reg: Registers, val mmu: MMU) {
 
   def executeStep(): Unit = {
 
