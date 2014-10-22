@@ -26,10 +26,40 @@ package com.pwootage.sor1k.cpu
 class OR1KInterpretedInstructions(or1k: OR1K) {
   val reg = or1k.reg
   val mmu = or1k.mmu
+  val LastBit = 1 << 31
 
   import InstructionCodes._
+
   def add(instr: Int) = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) + reg.gpCtx(instr.regB)
-    //TODO: Carry/Overflow if I can do that fast
+    val regA: Long = reg.gpCtx(instr.regA).toLong
+    val regB: Long = reg.gpCtx(instr.regB).toLong
+    val regD: Long = regA + regB
+    reg.gpCtx(instr.regD) = regD.toInt
+    //RegD >> 32 will contain, at most, the carry bit
+    reg.sr.cy = (regD >> 32).toInt
+
+    //0 0 1 (overflow)
+    //1 1 0 (overflow)
+    //Bits the same
+    //4 bitwise ands, two equivalence checks, one logical and, if statement comparison
+    //    reg.sr.ov = if (
+    //      ((regA & LastBit) == (regB & LastBit))
+    //        && ((regA & LastBit) != (regD & LastBit))
+    //    ) 1 else 0
+
+    //0 0 1 = carry in
+    //0 1 0 = carry in
+    //1 0 0 = carry in
+    //1 1 1 = carry in
+    //0 0 0 = no carry in
+    //0 1 1 = no carry in
+    //1 0 1 = no carry in
+    //1 1 0 = no carry in
+    //carry in ^ carry out >> 31
+    //4 XOR, 2 shifts, one cast
+    //Pretty sure this is faster (and is really slick!)
+    reg.sr.ov = (
+      (regA ^ regB ^ regD) ^ (regD >> 1)
+    ).toInt >> 31
   }
 }
