@@ -104,7 +104,7 @@ class AddSpec extends BaseSpec {
     }
   }
 
-  describe("l.adi") {
+  describe("l.addi") {
     describe("basic addition") {
       testAdd(a = 1, res = 2, carry = 0, overflow = 0) {
         _.addi(makeInstruction(L.Addi, 1))
@@ -129,6 +129,36 @@ class AddSpec extends BaseSpec {
       describe("positivies") {
         testAdd(a = Int.MaxValue, res = Int.MinValue, carry = 0, overflow = 1) {
           _.addi(makeInstruction(L.Addi, 1))
+        }
+      }
+    }
+  }
+
+  describe("l.addic") {
+    describe("basic addition") {
+      testAdd(a = 1, res = 3, carry = 0, overflow = 0, carryIn = 1) {
+        _.addic(makeInstruction(L.Addi, 1))
+      }
+    }
+    describe("sign-extension subtraction") {
+      testAdd(a = 1, res = 1, carry = 1, overflow = 0, carryIn = 1) {
+        _.addic(makeInstruction(L.Addi, -1))
+      }
+    }
+    describe("carry with unsigned math") {
+      testAdd(a = 0xFFFFFFFF, res = 1, carry = 1, overflow = 0, carryIn = 1) {
+        _.addic(makeInstruction(L.Addi, 1))
+      }
+    }
+    describe("overflow with signed math") {
+      describe("negatives") {
+        testAdd(a = Int.MinValue, res = Int.MaxValue, carry = 1, overflow = 1, carryIn = 1) {
+          _.addic(makeInstruction(L.Addi, -2))
+        }
+      }
+      describe("positivies") {
+        testAdd(a = Int.MaxValue, res = Int.MinValue + 1, carry = 0, overflow = 1, carryIn = 1) {
+          _.addic(makeInstruction(L.Addi, 1))
         }
       }
     }
