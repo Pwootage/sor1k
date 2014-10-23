@@ -20,6 +20,8 @@
 
 package com.pwootage.sor1k.cpu
 
+import com.pwootage.sor1k.IllegalInstructionException
+import com.pwootage.sor1k.cpu.InstructionCodes._
 import com.pwootage.sor1k.memory.MMU
 import com.pwootage.sor1k.registers.Registers
 
@@ -27,8 +29,32 @@ import com.pwootage.sor1k.registers.Registers
  * CPU core for OpenRisc 1000
  */
 class OR1K(val reg: Registers, val mmu: MMU) {
+  val instructions = new OR1KInterpretedInstructions(this)
 
   def executeStep(): Unit = {
+    val instr = mmu.getInstruction(reg.pc)
+    executeInstruction(instr)
+  }
 
+  def executeInstruction(i: Int): Unit = {
+    val ins = new Instruction(i)
+    opcodeLookupTable(ins.opcode)(ins)
+  }
+
+  private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
+  for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) =
+    {ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
+
+  opcodeLookupTable(L.Addi._1) = {instr: Instruction => instructions.addi(instr)}
+  opcodeLookupTable(L.Addic._1) = {instr: Instruction => instructions.addic(instr)}
+
+  opcodeLookupTable(38) = { instr: Instruction =>
+    if (instr.opcode4 == L.Add._3) {
+      instructions.add(instr)
+    } else if (instr.opcode4 == L.Addc._3) {
+      instructions.addc(instr)
+    } else {
+      throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
+    }
   }
 }

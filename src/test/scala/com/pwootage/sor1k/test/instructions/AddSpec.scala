@@ -34,7 +34,7 @@ class AddSpec extends BaseSpec {
     regA = 1,
     regB = if (imm != 0) 0 else 2,
     imm16 = imm
-  ).instr
+  )
 
   def testAdd(a: Int, b: Int = 0, res: Int, carry: Int, overflow: Int, carryIn: Int = 0)(test: OR1KInterpretedInstructions => Any) {
     withCPU { ins =>

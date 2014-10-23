@@ -29,4 +29,8 @@ import com.pwootage.sor1k.registers.Registers
  */
 class MMU(val reg: Registers, buff: ByteBuffer) {
   private val mainMemory = buff
+
+  def getInstruction(location: Int) = {
+    mainMemory.getInt(location)
+  }
 }

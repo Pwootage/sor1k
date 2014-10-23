@@ -34,3 +34,8 @@ class IllegalCPUStateException(msg: String, cause: Throwable = null) extends CPU
  * Indicates SR has entered an invalid state
  */
 class IllegalSRStateException(msg: String, cause: Throwable = null) extends CPUException(msg, cause)
+
+/**
+ * Indicates the CPU found an unkonwn instruction
+ */
+class IllegalInstructionException(msg: String, cause: Throwable = null) extends CPUException(msg, cause)

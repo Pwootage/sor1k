@@ -30,7 +30,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   import InstructionCodes._
 
-  def add(instr: Int): Unit = {
+  def add(instr: Instruction): Unit = {
     val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
     val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB)
     val regD: Long = regA + regB
@@ -48,7 +48,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     //TODO: Exception handling if those were set
   }
 
-  def addc(instr: Int): Unit = {
+  def addc(instr: Instruction): Unit = {
     val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
     val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB)
     val regD: Long = regA + regB + reg.sr.cy
@@ -57,7 +57,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.sr.ov = ((regA ^ regB ^ regD) ^ (regD >> 1)).toInt >>> 31
   }
 
-  def addi(instr: Int): Unit = {
+  def addi(instr: Instruction): Unit = {
     val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
     val b: Long = 0xFFFFFFFFL & instr.imm16.toShort
     val regD: Long = regA + b
@@ -66,7 +66,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.sr.ov = ((regA ^ b ^ regD) ^ (regD >> 1)).toInt >>> 31
   }
 
-  def addic(instr: Int) = {
+  def addic(instr: Instruction) = {
     val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
     val b: Long = 0xFFFFFFFFL & instr.imm16.toShort
     val regD: Long = regA + b + reg.sr.cy
