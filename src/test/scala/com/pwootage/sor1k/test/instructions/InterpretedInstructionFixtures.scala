@@ -22,7 +22,7 @@ package com.pwootage.sor1k.test.instructions
 
 import java.nio.ByteBuffer
 
-import com.pwootage.sor1k.cpu.{OR1KInterpretedInstructions, OR1K}
+import com.pwootage.sor1k.cpu.{OR1K, OR1KInterpretedInstructions}
 import com.pwootage.sor1k.memory.MMU
 import com.pwootage.sor1k.registers.Registers
 import com.pwootage.sor1k.test.BaseSpec
@@ -31,13 +31,12 @@ import com.pwootage.sor1k.test.BaseSpec
  * Base spec for instruction tests
  */
 object InterpretedInstructionFixtures {
-  def withCPU(testCode: OR1KInterpretedInstructions => Any) {
+  def withCPU(testCode: OR1K => Any) {
     try {
       val reg = new Registers
       val mem = new MMU(reg, ByteBuffer.allocate(1024))
       val or1k = new OR1K(reg, mem)
-      val ii = new OR1KInterpretedInstructions(or1k)
-      testCode(ii)
+      testCode(or1k)
     } finally {}
   }
 }

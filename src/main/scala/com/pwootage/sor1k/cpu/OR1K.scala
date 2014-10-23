@@ -48,7 +48,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Addi._1) = {instr: Instruction => instructions.addi(instr)}
   opcodeLookupTable(L.Addic._1) = {instr: Instruction => instructions.addic(instr)}
 
-  opcodeLookupTable(38) = { instr: Instruction =>
+  opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     if (instr.opcode4 == L.Add._3) {
       instructions.add(instr)
     } else if (instr.opcode4 == L.Addc._3) {

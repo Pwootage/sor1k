@@ -34,9 +34,9 @@ class AddSpec extends BaseSpec {
     regA = 1,
     regB = if (imm != 0) 0 else 2,
     imm16 = imm
-  )
+  ).instr
 
-  def testAdd(a: Int, b: Int = 0, res: Int, carry: Int, overflow: Int, carryIn: Int = 0)(test: OR1KInterpretedInstructions => Any) {
+  def testAdd(a: Int, b: Int = 0, res: Int, carry: Int, overflow: Int, carryIn: Int = 0)(test: OR1K => Any) {
     withCPU { ins =>
       ins.reg.gpCtx(1) = a
       ins.reg.gpCtx(2) = b
@@ -57,23 +57,23 @@ class AddSpec extends BaseSpec {
   describe("l.add") {
     describe("basic addition") {
       testAdd(a = 1, b = 1, res = 2, carry = 0, overflow = 0) {
-        _.add(makeInstruction(L.Add))
+        _.executeInstruction(makeInstruction(L.Add))
       }
     }
     describe("carry with unsigned math") {
       testAdd(a = 0xFFFFFFFF, b = 1, res = 0, carry = 1, overflow = 0) {
-        _.add(makeInstruction(L.Add))
+        _.executeInstruction(makeInstruction(L.Add))
       }
     }
     describe("overflow with signed math") {
       describe("negatives") {
         testAdd(a = Int.MinValue, b = -1, res = Int.MaxValue, carry = 1, overflow = 1) {
-          _.add(makeInstruction(L.Add))
+          _.executeInstruction(makeInstruction(L.Add))
         }
       }
       describe("positivies") {
         testAdd(a = Int.MaxValue, b = 1, res = Int.MinValue, carry = 0, overflow = 1) {
-          _.add(makeInstruction(L.Add))
+          _.executeInstruction(makeInstruction(L.Add))
         }
       }
     }
@@ -82,23 +82,23 @@ class AddSpec extends BaseSpec {
   describe("l.addc") {
     describe("basic addition") {
       testAdd(a = 1, b = 1, res = 3, carry = 0, overflow = 0, carryIn = 1) {
-        _.addc(makeInstruction(L.Addc))
+        _.executeInstruction(makeInstruction(L.Addc))
       }
     }
     describe("carry with unsigned math") {
       testAdd(a = 0xFFFFFFFE, b = 1, res = 0, carry = 1, overflow = 0, carryIn = 1) {
-        _.addc(makeInstruction(L.Addc))
+        _.executeInstruction(makeInstruction(L.Addc))
       }
     }
     describe("overflow with signed math") {
       describe("negatives") {
         testAdd(a = Int.MinValue, b = -2, res = Int.MaxValue, carry = 1, overflow = 1, carryIn = 1) {
-          _.addc(makeInstruction(L.Addc))
+          _.executeInstruction(makeInstruction(L.Addc))
         }
       }
       describe("positivies") {
         testAdd(a = Int.MaxValue, b = 1, res = Int.MinValue + 1, carry = 0, overflow = 1, carryIn = 1) {
-          _.addc(makeInstruction(L.Addc))
+          _.executeInstruction(makeInstruction(L.Addc))
         }
       }
     }
@@ -107,28 +107,28 @@ class AddSpec extends BaseSpec {
   describe("l.addi") {
     describe("basic addition") {
       testAdd(a = 1, res = 2, carry = 0, overflow = 0) {
-        _.addi(makeInstruction(L.Addi, 1))
+        _.executeInstruction(makeInstruction(L.Addi, 1))
       }
     }
     describe("sign-extension subtraction") {
       testAdd(a = 1, res = 0, carry = 1, overflow = 0) {
-        _.addi(makeInstruction(L.Addi, -1))
+        _.executeInstruction(makeInstruction(L.Addi, -1))
       }
     }
     describe("carry with unsigned math") {
       testAdd(a = 0xFFFFFFFF, res = 0, carry = 1, overflow = 0) {
-        _.addi(makeInstruction(L.Addi, 1))
+        _.executeInstruction(makeInstruction(L.Addi, 1))
       }
     }
     describe("overflow with signed math") {
       describe("negatives") {
         testAdd(a = Int.MinValue, res = Int.MaxValue, carry = 1, overflow = 1) {
-          _.addi(makeInstruction(L.Addi, -1))
+          _.executeInstruction(makeInstruction(L.Addi, -1))
         }
       }
       describe("positivies") {
         testAdd(a = Int.MaxValue, res = Int.MinValue, carry = 0, overflow = 1) {
-          _.addi(makeInstruction(L.Addi, 1))
+          _.executeInstruction(makeInstruction(L.Addi, 1))
         }
       }
     }
@@ -137,28 +137,28 @@ class AddSpec extends BaseSpec {
   describe("l.addic") {
     describe("basic addition") {
       testAdd(a = 1, res = 3, carry = 0, overflow = 0, carryIn = 1) {
-        _.addic(makeInstruction(L.Addi, 1))
+        _.executeInstruction(makeInstruction(L.Addic, 1))
       }
     }
     describe("sign-extension subtraction") {
       testAdd(a = 1, res = 1, carry = 1, overflow = 0, carryIn = 1) {
-        _.addic(makeInstruction(L.Addi, -1))
+        _.executeInstruction(makeInstruction(L.Addic, -1))
       }
     }
     describe("carry with unsigned math") {
       testAdd(a = 0xFFFFFFFF, res = 1, carry = 1, overflow = 0, carryIn = 1) {
-        _.addic(makeInstruction(L.Addi, 1))
+        _.executeInstruction(makeInstruction(L.Addic, 1))
       }
     }
     describe("overflow with signed math") {
       describe("negatives") {
         testAdd(a = Int.MinValue, res = Int.MaxValue, carry = 1, overflow = 1, carryIn = 1) {
-          _.addic(makeInstruction(L.Addi, -2))
+          _.executeInstruction(makeInstruction(L.Addic, -2))
         }
       }
       describe("positivies") {
         testAdd(a = Int.MaxValue, res = Int.MinValue + 1, carry = 0, overflow = 1, carryIn = 1) {
-          _.addic(makeInstruction(L.Addi, 1))
+          _.executeInstruction(makeInstruction(L.Addic, 1))
         }
       }
     }
