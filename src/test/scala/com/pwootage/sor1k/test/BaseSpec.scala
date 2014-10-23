@@ -18,15 +18,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package com.pwootage.sor1k.memory
+package com.pwootage.sor1k.test
 
-import java.nio.ByteBuffer
-
-import com.pwootage.sor1k.registers.Registers
+import org.scalatest._
 
 /**
- * Memory Management Unit for OpenRisc 1000
+ * Base spec class
  */
-class MMU(val reg: Registers, buff: ByteBuffer) {
-  private val mainMemory = buff
+abstract class BaseSpec extends FunSpec with Matchers with OptionValues with Inside with Inspectors {
+
 }

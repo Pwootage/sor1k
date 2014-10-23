@@ -27,8 +27,6 @@ import collection.mutable
  * OpenRisc 1000 register set
  */
 class Registers {
-  reset() //"reset" to init
-
   var pc = 0
 
   /** General purpose registers (16 sets of 32) */
@@ -38,10 +36,11 @@ class Registers {
   object gpCtx {
     def apply(ind: Int) = gp(sr.cid * 32 + ind)
 
-    def update(ind: Int, v: Int) = gp(sr.cid * 32 + ind) = _
+    def update(ind: Int, v: Int) = gp.update(sr.cid * 32 + ind, v)
   }
 
   val spr = new Array[mutable.Map[Int, SpecialPurposeRegister]](32)
+  for (i <- 0 until spr.length) spr(i) = mutable.Map[Int, SpecialPurposeRegister]()
 
   val NullReg = new SpecialPurposeRegister {
     def get = 0
@@ -99,19 +98,19 @@ class Registers {
   val avr = new ReadOnlySPR(1)
 
   val epcr = new Array[BasicSPR](16)
-  for (i <- 0 to 16) {
+  for (i <- 0 until 16) {
     epcr(i) = new BasicSPR
     spr(0)(32 + i) = epcr(i)
   }
 
   val eear = new Array[BasicSPR](16)
-  for (i <- 0 to 16) {
+  for (i <- 0 until 16) {
     eear(i) = new BasicSPR
     spr(0)(48 + i) = eear(i)
   }
 
   val esrr = new Array[BasicSPR](16)
-  for (i <- 0 to 16) {
+  for (i <- 0 until 16) {
     esrr(i) = new BasicSPR
     spr(0)(64 + i) = esrr(i)
   }
@@ -138,9 +137,11 @@ class Registers {
     sr() = 0 |
       (1 << 15) | //FO
       (1 << 0) //Supervisor Mode
-    for (i <- 0 to gp.size) gp(i) = 0
+    for (i <- 0 until gp.size) gp(i) = 0
     epcr.foreach(_.set(0))
     eear.foreach(_.set(0))
     esrr.foreach(_.set(0))
   }
+
+  reset() //"reset" to init
 }

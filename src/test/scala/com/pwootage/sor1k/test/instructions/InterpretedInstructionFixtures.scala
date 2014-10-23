@@ -18,15 +18,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package com.pwootage.sor1k.memory
+package com.pwootage.sor1k.test.instructions
 
 import java.nio.ByteBuffer
 
+import com.pwootage.sor1k.cpu.{OR1KInterpretedInstructions, OR1K}
+import com.pwootage.sor1k.memory.MMU
 import com.pwootage.sor1k.registers.Registers
+import com.pwootage.sor1k.test.BaseSpec
 
 /**
- * Memory Management Unit for OpenRisc 1000
+ * Base spec for instruction tests
  */
-class MMU(val reg: Registers, buff: ByteBuffer) {
-  private val mainMemory = buff
+object InterpretedInstructionFixtures {
+  def withCPU(testCode: OR1KInterpretedInstructions => Any) {
+    try {
+      val reg = new Registers
+      val mem = new MMU(reg, ByteBuffer.allocate(1024))
+      val or1k = new OR1K(reg, mem)
+      val ii = new OR1KInterpretedInstructions(or1k)
+      testCode(ii)
+    } finally {}
+  }
 }

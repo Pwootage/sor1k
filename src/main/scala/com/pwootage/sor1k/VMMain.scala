@@ -24,13 +24,15 @@ import java.nio.ByteBuffer
 
 import com.pwootage.sor1k.cpu.OR1K
 import com.pwootage.sor1k.memory.MMU
+import com.pwootage.sor1k.registers.Registers
 
 /**
  * Main entry-point for VM emulation
  */
 object VMMain {
   def main(args: Array[String]) {
-    val mem = new MMU(ByteBuffer.allocate(1 << 22)) //4mb of ram
-    val cpu = new OR1K(mem)
+    val reg = new Registers
+    val mem = new MMU(reg, ByteBuffer.allocate(1 << 22)) //4mb of ram
+    val cpu = new OR1K(reg, mem)
   }
 }
