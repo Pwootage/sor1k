@@ -61,6 +61,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Movhi) = { instr: Instruction => instructions.movhi(instr)}
   opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
   opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
+  opcodeLookupTable(L.Nop) = { instr: Instruction => instructions.nop(instr)}
   opcodeLookupTable(L.Lwa) = { instr: Instruction => instructions.lwa(instr)}
   opcodeLookupTable(L.Lwz) = { instr: Instruction => instructions.lwz(instr)}
   opcodeLookupTable(L.Lws) = { instr: Instruction => instructions.lws(instr)}
@@ -71,6 +72,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
   opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
   opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
+  opcodeLookupTable(L.Ori) = { instr: Instruction => instructions.ori(instr)}
   opcodeLookupTable(L.Muli) = { instr: Instruction => instructions.muli(instr)}
   opcodeLookupTable(L.Mfspr) = { instr: Instruction => instructions.mfspr(instr)}
   opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
@@ -81,8 +83,10 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case L.Add._3 => instructions.add(instr)
       case L.Addc._3 => instructions.addc(instr)
       case L.And._3 => instructions.and(instr)
+      case L.Or._3 => instructions.or(instr)
       case L.Mul._3 => instructions.mul(instr)
       case L.Div._3 => instructions.div(instr)
+      case L.Mulu._3 => instructions.mulu(instr)
       case L.Exths._3 => instr.opcode2 match {
         case L.Exths._2 => instructions.exths(instr)
         case L.Extbs._2 => instructions.extbs(instr)

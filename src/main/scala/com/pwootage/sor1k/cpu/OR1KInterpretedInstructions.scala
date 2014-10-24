@@ -75,6 +75,8 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.sr.ov = ((regA ^ b ^ regD) ^ (reg.sr.cy << 31)) >>> 31
   }
 
+
+
   def and(instr: Instruction) = {
     reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & reg.gpCtx(instr.regB)
   }
@@ -219,5 +221,23 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.gpCtx(instr.regD) = regA * regB
     val regDLong = regA.toLong * regB.toLong
     reg.sr.ov = if (regDLong > Int.MaxValue || regDLong < Int.MinValue) 1 else 0
+  }
+
+  def mulu(instr: Instruction): Unit = {
+    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA).toLong
+    val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB).toLong
+    val regD = regA * regB
+    reg.gpCtx(instr.regD) = regD.toInt
+    reg.sr.ov = if (regD > 0xFFFFFFFFL || regD < 0) 1 else 0
+  }
+
+  def nop(instr: Instruction): Unit = {}
+
+  def or(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) | reg.gpCtx(instr.regB)
+  }
+
+  def ori(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) | instr.imm16
   }
 }
