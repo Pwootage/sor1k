@@ -20,7 +20,7 @@
 
 package com.pwootage.sor1k.memory
 
-import java.nio.ByteBuffer
+import java.nio.{ByteOrder, ByteBuffer}
 
 import com.pwootage.sor1k.registers.Registers
 
@@ -28,9 +28,21 @@ import com.pwootage.sor1k.registers.Registers
  * Memory Management Unit for OpenRisc 1000
  */
 class MMU(val reg: Registers, buff: ByteBuffer) {
-  private val mainMemory = buff
+  private val mainMemory = buff.duplicate().order(ByteOrder.BIG_ENDIAN)
 
   def getInstruction(location: Int) = {
+    mainMemory.getInt(location)
+  }
+
+  def getByte(location: Int) = {
+    mainMemory.get(location)
+  }
+
+  def getShort(location: Int) = {
+    mainMemory.getShort(location)
+  }
+
+  def getInt(location: Int) = {
     mainMemory.getInt(location)
   }
 }

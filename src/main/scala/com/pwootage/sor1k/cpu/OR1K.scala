@@ -60,7 +60,16 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
   opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
   opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
-
+  opcodeLookupTable(L.Lwa) = { instr: Instruction => instructions.lwa(instr)}
+  opcodeLookupTable(L.Lwz) = { instr: Instruction => instructions.lwz(instr)}
+  opcodeLookupTable(L.Lws) = { instr: Instruction => instructions.lws(instr)}
+  opcodeLookupTable(L.Lbz) = { instr: Instruction => instructions.lbz(instr)}
+  opcodeLookupTable(L.Lbs) = { instr: Instruction => instructions.lbs(instr)}
+  opcodeLookupTable(L.Lhz) = { instr: Instruction => instructions.lhz(instr)}
+  opcodeLookupTable(L.Lhs) = { instr: Instruction => instructions.lhs(instr)}
+  opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
+  opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
+  opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
     //ie there is one method call per case -.-
@@ -80,8 +89,4 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case _ => throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
     }
   }
-
-  opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
-  opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
-  opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
 }

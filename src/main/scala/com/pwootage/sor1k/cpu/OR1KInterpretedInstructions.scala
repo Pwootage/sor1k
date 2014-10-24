@@ -155,4 +155,40 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     or1k.delaySlot = true
   }
 
+  def lbs(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu.getByte(ea)
+  }
+
+  def lbz(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = 0xFF & mmu.getByte(ea).toInt
+  }
+
+  def lhs(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu.getShort(ea)
+  }
+
+  def lhz(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = 0xFFFF & mmu.getShort(ea).toInt
+  }
+
+  //All memory access is atomic in this VM
+  def lwa(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu.getInt(ea)
+  }
+
+  def lws(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu.getInt(ea)
+  }
+
+  def lwz(instr: Instruction): Unit = {
+    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu.getInt(ea)
+  }
+
 }
