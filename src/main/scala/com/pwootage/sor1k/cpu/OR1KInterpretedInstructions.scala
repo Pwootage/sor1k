@@ -84,13 +84,11 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def bf(instr: Instruction) = if (reg.sr.f > 0) {
-    val imm = instr.imm26 << 2
-    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+    reg.pc = reg.pc + (instr.imm26 << 6) >> 6
   }
 
   def bnf(instr: Instruction) = if (reg.sr.f == 0) {
-    val imm = instr.imm26 << 2
-    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+    reg.pc = reg.pc + (instr.imm26 << 6) >> 6
   }
 
   def cmov(instr: Instruction) = {
@@ -134,7 +132,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def j(instr: Instruction): Unit = {
-    val imm = instr.imm26 << 2
-    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+    reg.npc = reg.pc + (instr.imm26 << 6) >> 6
   }
+
 }

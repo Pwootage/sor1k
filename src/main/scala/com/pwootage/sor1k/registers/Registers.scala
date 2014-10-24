@@ -27,7 +27,12 @@ import collection.mutable
  * OpenRisc 1000 register set
  */
 class Registers {
+  /** Current Program Counter */
   var pc = 0
+  /** Last Program Counter */
+  var lpc = pc - 1
+  /** Next Program Counter */
+  var npc = pc + 1
 
   /** General purpose registers (16 sets of 32) */
   val gp = new Array[Int](16 * 32)
@@ -78,8 +83,7 @@ class Registers {
   val cpucfgr = new ReadOnlySPR(
     0 |
       (15 << 0) | //15 Shadow GPR's
-      (1 << 5) | //ORBIS32
-      (1 << 10) //No Delay Slot
+      (1 << 5) //ORBIS32
   )
 
   /** Data MMU Configuration Register */

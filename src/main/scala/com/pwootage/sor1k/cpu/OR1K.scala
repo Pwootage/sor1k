@@ -31,9 +31,19 @@ import com.pwootage.sor1k.registers.Registers
 class OR1K(val reg: Registers, val mmu: MMU) {
   val instructions = new OR1KInterpretedInstructions(this)
 
+  /** Indicates whether the CPU should execute a delay slot before going to NPC */
+  var delaySlot = false
+
   def executeStep(): Unit = {
     val instr = mmu.getInstruction(reg.pc)
     executeInstruction(instr)
+    if (delaySlot) {
+      reg.pc += 1
+      delaySlot = false
+    } else {
+      reg.pc = reg.npc
+      reg.npc = reg.pc + 1
+    }
   }
 
   def executeInstruction(i: Int): Unit = {
@@ -43,6 +53,10 @@ class OR1K(val reg: Registers, val mmu: MMU) {
 
   private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
   for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) = { ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
+
+  opcodeLookupTable(L.J._1) = { instr: Instruction => instructions.j(instr)}
+  opcodeLookupTable(L.Bnf._1) = { instr: Instruction => instructions.bnf(instr)}
+  opcodeLookupTable(L.Bf._1) = { instr: Instruction => instructions.bf(instr)}
 
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
