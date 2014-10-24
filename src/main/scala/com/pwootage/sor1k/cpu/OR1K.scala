@@ -58,6 +58,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Jal) = { instr: Instruction => instructions.jal(instr)}
   opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
   opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
+  opcodeLookupTable(L.Movhi) = { instr: Instruction => instructions.movhi(instr)}
   opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
   opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
   opcodeLookupTable(L.Lwa) = { instr: Instruction => instructions.lwa(instr)}
@@ -70,6 +71,9 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
   opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
   opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
+  opcodeLookupTable(L.Muli) = { instr: Instruction => instructions.muli(instr)}
+  opcodeLookupTable(L.Mfspr) = { instr: Instruction => instructions.mfspr(instr)}
+  opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
     //ie there is one method call per case -.-
@@ -77,6 +81,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case L.Add._3 => instructions.add(instr)
       case L.Addc._3 => instructions.addc(instr)
       case L.And._3 => instructions.and(instr)
+      case L.Mul._3 => instructions.mul(instr)
       case L.Div._3 => instructions.div(instr)
       case L.Exths._3 => instr.opcode2 match {
         case L.Exths._2 => instructions.exths(instr)

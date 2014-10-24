@@ -32,6 +32,8 @@ object InstructionCodes {
     val Bnf = 0x3
     val Bf = 0x4
 
+    val Movhi = 0x6
+
     val Jr = 0x11
     val Jalr = 0x12
 
@@ -46,10 +48,14 @@ object InstructionCodes {
     val Addi = 0x27
     val Addic = 0x28
     val Andi = 0x29
+    val Muli = 0x2C
+    val Mfspr = 0x2D
+    val Mtspr = 0x30
 
     val Add = (0x38, 0x0, 0x0)
     val Addc = (0x38, 0x0, 0x1)
     val And = (0x38, 0x0, 0x3)
+    val Mul = (0x38, 0x3, 0x6)
     val Div = (0x38, 0x3, 0x9)
 
     val Exths = (0x38, 0x0, 0xC)
@@ -99,6 +105,8 @@ object InstructionCodes {
     def regA = (instr >>> 16) & 0x1F
 
     def regB = (instr >>> 11) & 0x1F
+
+    def imm11 = (instr >>> 0) & 0x7FF
 
     def imm16 = (instr >>> 0) & 0xFFFF
 

@@ -191,4 +191,33 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.gpCtx(instr.regD) = mmu.getInt(ea)
   }
 
+  def mfspr(instr: Instruction): Unit = {
+    val spr = (instr.regA | instr.imm16) & 0xFFFF
+    reg.gpCtx(instr.regD) = reg.getSPR(spr >> 11, spr & 0x7FF).get
+  }
+
+  def movhi(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regD) = instr.imm16 << 16
+  }
+
+  def mtspr(instr: Instruction): Unit = {
+    val spr = (instr.regA | instr.imm11 | (instr.regD >> 10)) & 0xFFFF
+    reg.getSPR(spr >> 11, spr & 0x7FF).set(reg.gpCtx(instr.regB))
+  }
+
+  def mul(instr: Instruction): Unit = {
+    val regA = reg.gpCtx(instr.regA)
+    val regB = reg.gpCtx(instr.regB)
+    reg.gpCtx(instr.regD) = regA * regB
+    val regDLong = regA.toLong * regB.toLong
+    reg.sr.ov = if (regDLong > Int.MaxValue || regDLong < Int.MinValue) 1 else 0
+  }
+
+  def muli(instr: Instruction): Unit = {
+    val regA = reg.gpCtx(instr.regA)
+    val regB = instr.imm16
+    reg.gpCtx(instr.regD) = regA * regB
+    val regDLong = regA.toLong * regB.toLong
+    reg.sr.ov = if (regDLong > Int.MaxValue || regDLong < Int.MinValue) 1 else 0
+  }
 }
