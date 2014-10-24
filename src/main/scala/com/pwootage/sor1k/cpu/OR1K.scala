@@ -54,9 +54,9 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
   for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) = { ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
 
-  opcodeLookupTable(L.J._1) = { instr: Instruction => instructions.j(instr)}
-  opcodeLookupTable(L.Bnf._1) = { instr: Instruction => instructions.bnf(instr)}
-  opcodeLookupTable(L.Bf._1) = { instr: Instruction => instructions.bf(instr)}
+  opcodeLookupTable(L.J) = { instr: Instruction => instructions.j(instr)}
+  opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
+  opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
 
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
@@ -78,7 +78,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     }
   }
 
-  opcodeLookupTable(L.Addi._1) = { instr: Instruction => instructions.addi(instr)}
-  opcodeLookupTable(L.Addic._1) = { instr: Instruction => instructions.addic(instr)}
-  opcodeLookupTable(L.Andi._1) = { instr: Instruction => instructions.andi(instr)}
+  opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
+  opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
+  opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
 }
