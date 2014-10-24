@@ -74,4 +74,67 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     reg.sr.cy = (regD >> 32).toInt
     reg.sr.ov = ((regA ^ b ^ regD) ^ (regD >> 1)).toInt >>> 31
   }
+
+  def and(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & reg.gpCtx(instr.regB)
+  }
+
+  def andi(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & instr.imm16
+  }
+
+  def bf(instr: Instruction) = if (reg.sr.f > 0) {
+    val imm = instr.imm26 << 2
+    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+  }
+
+  def bnf(instr: Instruction) = if (reg.sr.f == 0) {
+    val imm = instr.imm26 << 2
+    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+  }
+
+  def cmov(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(if (reg.sr.f > 0) instr.regA else instr.regB)
+  }
+
+  def div(instr: Instruction): Unit = {
+    val regB = reg.gpCtx(instr.regB)
+    if (regB == 0) {
+      reg.sr.ov = 1
+    } else {
+      reg.sr.ov = 0
+      reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) / regB
+    }
+  }
+
+  def divu(instr: Instruction): Unit = {
+    val regB: Long = 0xFFFFFFFFL | reg.gpCtx(instr.regB)
+    if (regB == 0) {
+      reg.sr.ov = 1
+    } else {
+      reg.sr.ov = 0
+      reg.gpCtx(instr.regD) = ((0xFFFFFFFFL | reg.gpCtx(instr.regA)) / regB).toInt
+    }
+  }
+
+  def extbs(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA).toByte
+  }
+
+  def extbz(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & 0xFF
+  }
+
+  def exths(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA).toShort
+  }
+
+  def exthz(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & 0xFFFF
+  }
+
+  def j(instr: Instruction): Unit = {
+    val imm = instr.imm26 << 2
+    reg.pc = reg.pc + (if ((imm & 0x8000000) > 0) imm | 0xF0000000 else imm)
+  }
 }

@@ -42,19 +42,29 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   }
 
   private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
-  for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) =
-    {ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
-
-  opcodeLookupTable(L.Addi._1) = {instr: Instruction => instructions.addi(instr)}
-  opcodeLookupTable(L.Addic._1) = {instr: Instruction => instructions.addic(instr)}
+  for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) = { ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
 
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
-    if (instr.opcode4 == L.Add._3) {
-      instructions.add(instr)
-    } else if (instr.opcode4 == L.Addc._3) {
-      instructions.addc(instr)
-    } else {
-      throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
+    //TODO: Scala is bad at constant inlining and I probably should manually inline them
+    //ie there is one method call per case -.-
+    instr.opcode4 match {
+      case L.Add._3 => instructions.add(instr)
+      case L.Addc._3 => instructions.addc(instr)
+      case L.And._3 => instructions.and(instr)
+      case L.Div._3 => instructions.div(instr)
+      case L.Exths._3 => instr.opcode2 match {
+        case L.Exths._2 => instructions.exths(instr)
+        case L.Extbs._2 => instructions.extbs(instr)
+        case L.Exthz._2 => instructions.exthz(instr)
+        case L.Extbz._2 => instructions.extbz(instr)
+      }
+      case L.Divu._3 => instructions.divu(instr)
+      case L.Cmov._3 => instructions.cmov(instr)
+      case _ => throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
     }
   }
+
+  opcodeLookupTable(L.Addi._1) = { instr: Instruction => instructions.addi(instr)}
+  opcodeLookupTable(L.Addic._1) = { instr: Instruction => instructions.addic(instr)}
+  opcodeLookupTable(L.Andi._1) = { instr: Instruction => instructions.andi(instr)}
 }

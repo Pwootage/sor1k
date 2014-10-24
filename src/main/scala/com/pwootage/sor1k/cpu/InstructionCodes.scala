@@ -26,10 +26,27 @@ package com.pwootage.sor1k.cpu
 object InstructionCodes {
 
   object L {
+    val J = (0x0, 0x0, 0x0)
+    val Bnf = (0x3, 0x0, 0x0)
+    val Bf = (0x4, 0x0, 0x0)
+
     val Add = (0x38, 0x0, 0x0)
     val Addc = (0x38, 0x0, 0x1)
+    val And = (0x38, 0x0, 0x3)
+    val Div = (0x38, 0x3, 0x9)
+
+    val Exths = (0x38, 0x0, 0xC)
+    val Extbs = (0x38, 0x1, 0xC)
+    val Exthz = (0x38, 0x2, 0xC)
+    val Extbz = (0x38, 0x3, 0xC)
+
+    val Divu = (0x38, 0x3, 0xA)
+    val Cmov = (0x38, 0x0, 0xE)
+
     val Addi = (0x27, 0x0, 0x0)
     val Addic = (0x28, 0x0, 0x0)
+    val Andi = (0x29, 0x0, 0x0)
+
   }
 
   //these methods *should* be inlined by compiler/jvm
@@ -42,6 +59,7 @@ object InstructionCodes {
       regD: Int = 0,
       regA: Int = 0,
       regB: Int = 0,
+      imm26: Int = 0,
       imm16: Int = 0
       ) = this(
       0 |
@@ -51,7 +69,8 @@ object InstructionCodes {
         (regD & 0x1F) << 21 |
         (regA & 0x1F) << 16 |
         (regB & 0x1F) << 11 |
-        (imm16 & 0xFFFF) << 0
+        (imm16 & 0xFFFF) << 0 |
+        (imm26 & 0x3FFFFFF) << 0
     )
 
     implicit def instrToInt(instr: Instruction) = instr.instr
@@ -69,6 +88,8 @@ object InstructionCodes {
     def regB = (instr >>> 11) & 0x1F
 
     def imm16 = (instr >>> 0) & 0xFFFF
+
+    def imm26 = (instr >>> 0) & 0x3FFFFFF
   }
 
 }

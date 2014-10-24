@@ -115,6 +115,10 @@ class Registers {
     spr(0)(64 + i) = esrr(i)
   }
 
+  /** Supervisory Register */
+  val sr = new SupervisoryRegister
+  spr(0)(17) = sr
+
   spr(0)(0) = vr
   spr(0)(1) = upr
   spr(0)(2) = cpucfgr
@@ -124,14 +128,6 @@ class Registers {
   spr(0)(9) = vr2
   spr(0)(10) = avr
   spr(0)(17) = sr
-
-  /** Supervisory Register */
-  val sr = new SupervisoryRegister
-  spr(0)(17) = sr
-
-  object srAccess {
-
-  }
 
   def reset(): Unit = {
     sr() = 0 |
