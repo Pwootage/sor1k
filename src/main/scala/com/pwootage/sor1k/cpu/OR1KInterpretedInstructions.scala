@@ -85,10 +85,12 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def bf(instr: Instruction) = if (reg.sr.f > 0) {
     reg.pc = reg.pc + (instr.imm26 << 6) >> 4
+    or1k.delaySlot = true
   }
 
   def bnf(instr: Instruction) = if (reg.sr.f == 0) {
     reg.pc = reg.pc + (instr.imm26 << 6) >> 4
+    or1k.delaySlot = true
   }
 
   def cmov(instr: Instruction) = {
@@ -133,6 +135,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def j(instr: Instruction): Unit = {
     reg.npc = reg.pc + (instr.imm26 << 6) >> 4
+    or1k.delaySlot = true
   }
 
 }
