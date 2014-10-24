@@ -82,7 +82,24 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case _ => throw new IllegalInstructionException("Invalid add opcode2_bitb: " + instr.opcode2_bit6)
     }
   }
+  opcodeLookupTable(L.Sfeqi._1) = { instr: Instruction =>
+    instr.regD match {
+      case L.Sfeqi._2 => instructions.sfeqi(instr)
+      case L.Sfnei._2 => instructions.sfnei(instr)
+      case L.Sfgtui._2 => instructions.sfgtui(instr)
+      case L.Sfgeui._2 => instructions.sfgeui(instr)
+      case L.Sfltui._2 => instructions.sfltui(instr)
+      case L.Sfleui._2 => instructions.sfleui(instr)
+      case L.Sfgtsi._2 => instructions.sfgtsi(instr)
+      case L.Sfgesi._2 => instructions.sfgesi(instr)
+      case L.Sfltsi._2 => instructions.sfltsi(instr)
+      case L.Sflesi._2 => instructions.sflesi(instr)
+      case _ => throw new IllegalInstructionException("Invalid set flag immediate opcode: " + instr.regD)
+    }
+  }
   opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
+  opcodeLookupTable(L.Sb) = { instr: Instruction => instructions.sb(instr)}
+  opcodeLookupTable(L.Sh) = { instr: Instruction => instructions.sh(instr)}
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
     //ie there is one method call per case -.-
@@ -104,6 +121,23 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case L.Divu._3 => instructions.divu(instr)
       case L.Cmov._3 => instructions.cmov(instr)
       case _ => throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
+    }
+  }
+
+  opcodeLookupTable(L.Sfeq._1) = { instr: Instruction =>
+    //This is actually an opcode but hey, it's the right place
+    instr.regD match {
+      case L.Sfeq._2 => instructions.sfeq(instr)
+      case L.Sfne._2 => instructions.sfne(instr)
+      case L.Sfgtu._2 => instructions.sfgtu(instr)
+      case L.Sfgeu._2 => instructions.sfgeu(instr)
+      case L.Sfltu._2 => instructions.sfltu(instr)
+      case L.Sfl3u._2 => instructions.sfleu(instr)
+      case L.Sfgts._2 => instructions.sfgts(instr)
+      case L.Sfges._2 => instructions.sfges(instr)
+      case L.Sflts._2 => instructions.sflts(instr)
+      case L.Sfles._2 => instructions.sfles(instr)
+      case _ => throw new IllegalInstructionException("Invalid set flag opcode: " + instr.regD)
     }
   }
 }

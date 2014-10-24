@@ -76,7 +76,6 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
 
-
   def and(instr: Instruction) = {
     reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) & reg.gpCtx(instr.regB)
   }
@@ -203,7 +202,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def mtspr(instr: Instruction): Unit = {
-    val spr = (instr.regA | instr.imm11 | (instr.regD >> 10)) & 0xFFFF
+    val spr = (instr.regA | instr.imm16_split) & 0xFFFF
     reg.getSPR(spr >> 11, spr & 0x7FF).set(reg.gpCtx(instr.regB))
   }
 
@@ -256,5 +255,71 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     val bits = instr.imm5
     val regA = reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = regA >> bits | regA << (32 - bits)
+  }
+
+  def sb(instr: Instruction): Unit = {
+    val ea = instr.regA + instr.imm16_split.toShort
+    mmu.setByte(ea, reg.gpCtx(instr.regB).toByte)
+  }
+
+  private def cmps(instr: Instruction, op: (Int, Int) => Boolean) = {
+    reg.sr.f = if (op(reg.gpCtx(instr.regA), reg.gpCtx(instr.regB))) 1 else 0
+  }
+
+  private def cmpsi(instr: Instruction, op: (Int, Int) => Boolean) = {
+    reg.sr.f = if (op(reg.gpCtx(instr.regA), instr.regB.toShort.toInt)) 1 else 0
+  }
+
+  private def cmpu(instr: Instruction, op: (Long, Long) => Boolean) = {
+    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & reg.gpCtx(instr.regB))) 1 else 0
+  }
+
+  private def cmpui(instr: Instruction, op: (Long, Long) => Boolean) = {
+    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & instr.regB.toShort)) 1 else 0
+  }
+
+  def sfeq(instr: Instruction) = cmps(instr, _ == _)
+
+  def sfeqi(instr: Instruction) = cmpsi(instr, _ == _)
+
+  def sfges(instr: Instruction) = cmps(instr, _ >= _)
+
+  def sfgesi(instr: Instruction) = cmpsi(instr, _ >= _)
+
+  def sfgeu(instr: Instruction) = cmpu(instr, _ >= _)
+
+  def sfgeui(instr: Instruction) = cmpui(instr, _ >= _)
+
+  def sfgts(instr: Instruction) = cmps(instr, _ > _)
+
+  def sfgtsi(instr: Instruction) = cmpsi(instr, _ > _)
+
+  def sfgtu(instr: Instruction) = cmpu(instr, _ > _)
+
+  def sfgtui(instr: Instruction) = cmpui(instr, _ > _)
+
+  def sfles(instr: Instruction) = cmps(instr, _ <= _)
+
+  def sflesi(instr: Instruction) = cmpsi(instr, _ <= _)
+
+  def sfleu(instr: Instruction) = cmpu(instr, _ <= _)
+
+  def sfleui(instr: Instruction) = cmpui(instr, _ <= _)
+
+  def sflts(instr: Instruction) = cmps(instr, _ < _)
+
+  def sfltsi(instr: Instruction) = cmpsi(instr, _ < _)
+
+  def sfltu(instr: Instruction) = cmpu(instr, _ < _)
+
+  def sfltui(instr: Instruction) = cmpui(instr, _ < _)
+
+  def sfne(instr: Instruction) = cmps(instr, _ != _)
+
+  def sfnei(instr: Instruction) = cmpsi(instr, _ != _)
+
+  def sh(instr: Instruction): Unit = {
+    val ea = instr.regA + instr.imm16_split.toShort
+    mmu.setShort(ea, reg.gpCtx(instr.regB).toShort)
   }
 }

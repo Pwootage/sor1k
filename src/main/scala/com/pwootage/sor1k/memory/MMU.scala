@@ -45,4 +45,16 @@ class MMU(val reg: Registers, buff: ByteBuffer) {
   def getInt(location: Int) = {
     mainMemory.getInt(location)
   }
+
+  def setByte(location: Int, value: Byte) = {
+    mainMemory.put(location, value)
+  }
+
+  def setShort(location: Int, value: Short) = {
+    mainMemory.putShort(location, value)
+  }
+
+  def setInt(location: Int, value: Int) = {
+    mainMemory.putInt(location, value)
+  }
 }
