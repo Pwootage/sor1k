@@ -138,4 +138,21 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     or1k.delaySlot = true
   }
 
+  def jal(instr: Instruction): Unit = {
+    reg.npc = reg.pc + (instr.imm26 << 6) >> 4
+    or1k.delaySlot = true
+    reg.lr() = reg.pc + 8
+  }
+
+  def jalr(instr: Instruction): Unit = {
+    reg.npc = reg.gpCtx(instr.regB)
+    or1k.delaySlot = true
+    reg.lr() = reg.pc + 8
+  }
+
+  def jr(instr: Instruction): Unit = {
+    reg.npc = reg.gpCtx(instr.regB)
+    or1k.delaySlot = true
+  }
+
 }

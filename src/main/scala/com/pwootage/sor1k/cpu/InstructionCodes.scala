@@ -28,8 +28,12 @@ object InstructionCodes {
   object L {
     val J = 0x0
     val Jal = 0x1
+
     val Bnf = 0x3
     val Bf = 0x4
+
+    val Jr = 0x11
+    val Jalr = 0x12
 
     val Add = (0x38, 0x0, 0x0)
     val Addc = (0x38, 0x0, 0x1)

@@ -37,6 +37,12 @@ class Registers {
   /** General purpose registers (16 sets of 32) */
   val gp = new Array[Int](16 * 32)
 
+  val lr = new SpecialPurposeRegister {
+    override def set(v: Int): Unit = gpCtx.update(9, v)
+
+    override def get: Int = gpCtx.apply(9)
+  }
+
   /** Get GPR for current context */
   object gpCtx {
     def apply(ind: Int) = gp(sr.cid * 32 + ind)

@@ -55,8 +55,11 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) = { ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
 
   opcodeLookupTable(L.J) = { instr: Instruction => instructions.j(instr)}
+  opcodeLookupTable(L.Jal) = { instr: Instruction => instructions.jal(instr)}
   opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
   opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
+  opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
+  opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
 
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
