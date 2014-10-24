@@ -240,4 +240,15 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   def ori(instr: Instruction) = {
     reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) | instr.imm16
   }
+
+  def rfe(instr: Instruction): Unit = {
+    reg.pc = reg.epcr(reg.sr.cid).get
+    reg.sr() = reg.esrr(reg.sr.cid).get
+  }
+
+  def ror(instr: Instruction): Unit = {
+    val bits = reg.gpCtx(instr.regB) & 0x1F //%32
+    val regA = reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = regA >> bits | regA << (32 - bits)
+  }
 }

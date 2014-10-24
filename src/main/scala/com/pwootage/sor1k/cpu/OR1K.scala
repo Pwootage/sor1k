@@ -59,6 +59,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
   opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
   opcodeLookupTable(L.Movhi) = { instr: Instruction => instructions.movhi(instr)}
+  opcodeLookupTable(L.Rfe) = { instr: Instruction => instructions.rfe(instr)}
   opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
   opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
   opcodeLookupTable(L.Nop) = { instr: Instruction => instructions.nop(instr)}
@@ -85,6 +86,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case L.And._3 => instructions.and(instr)
       case L.Or._3 => instructions.or(instr)
       case L.Mul._3 => instructions.mul(instr)
+      case L.Ror._3 => instructions.ror(instr)
       case L.Div._3 => instructions.div(instr)
       case L.Mulu._3 => instructions.mulu(instr)
       case L.Exths._3 => instr.opcode2 match {
