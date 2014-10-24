@@ -31,48 +31,48 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   import InstructionCodes._
 
   def add(instr: Instruction): Unit = {
-    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
-    val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB)
-    val regD: Long = regA + regB
-    reg.gpCtx(instr.regD) = regD.toInt
-    reg.sr.cy = (regD >> 32).toInt
+    val regA = reg.gpCtx(instr.regA)
+    val regB = reg.gpCtx(instr.regB)
+    val regD = regA + regB
+    reg.gpCtx(instr.regD) = regD
+    reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
     //4 bitwise ands, two equivalence checks, one logical and, if statement comparison
     //    reg.sr.ov = if (
     //      ((regA & LastBit) == (regB & LastBit))
     //        && ((regA & LastBit) != (regD & LastBit))
     //    ) 1 else 0
 
-    //4 XOR, 2 shifts, one cast
+    //4 XOR, 2 shifts
     //Pretty sure this is faster (and is really slick!)
-    reg.sr.ov = ((regA ^ regB ^ regD) ^ (regD >> 1)).toInt >>> 31
+    reg.sr.ov = ((regA ^ regB ^ regD) ^ (reg.sr.cy << 31)) >>> 31
     //TODO: Exception handling if those were set
   }
 
   def addc(instr: Instruction): Unit = {
-    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
-    val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB)
-    val regD: Long = regA + regB + reg.sr.cy
-    reg.gpCtx(instr.regD) = regD.toInt
-    reg.sr.cy = (regD >> 32).toInt
-    reg.sr.ov = ((regA ^ regB ^ regD) ^ (regD >> 1)).toInt >>> 31
+    val regA = reg.gpCtx(instr.regA)
+    val regB = reg.gpCtx(instr.regB)
+    val regD = regA + regB + reg.sr.cy
+    reg.gpCtx(instr.regD) = regD
+    reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
+    reg.sr.ov = ((regA ^ regB ^ regD) ^ (reg.sr.cy << 31)) >>> 31
   }
 
   def addi(instr: Instruction): Unit = {
-    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
-    val b: Long = 0xFFFFFFFFL & instr.imm16.toShort
-    val regD: Long = regA + b
-    reg.gpCtx(instr.regD) = regD.toInt
-    reg.sr.cy = (regD >> 32).toInt
-    reg.sr.ov = ((regA ^ b ^ regD) ^ (regD >> 1)).toInt >>> 31
+    val regA = reg.gpCtx(instr.regA)
+    val b = instr.imm16.toShort
+    val regD = regA + b
+    reg.gpCtx(instr.regD) = regD
+    reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
+    reg.sr.ov = ((regA ^ b ^ regD) ^ (reg.sr.cy << 31)) >>> 31
   }
 
   def addic(instr: Instruction) = {
-    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA)
-    val b: Long = 0xFFFFFFFFL & instr.imm16.toShort
-    val regD: Long = regA + b + reg.sr.cy
-    reg.gpCtx(instr.regD) = regD.toInt
-    reg.sr.cy = (regD >> 32).toInt
-    reg.sr.ov = ((regA ^ b ^ regD) ^ (regD >> 1)).toInt >>> 31
+    val regA = reg.gpCtx(instr.regA)
+    val b = instr.imm16.toShort.toInt
+    val regD = regA + b + reg.sr.cy
+    reg.gpCtx(instr.regD) = regD
+    reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
+    reg.sr.ov = ((regA ^ b ^ regD) ^ (reg.sr.cy << 31)) >>> 31
   }
 
   def and(instr: Instruction) = {

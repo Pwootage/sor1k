@@ -141,8 +141,8 @@ class AddSpec extends BaseSpec {
       }
     }
     describe("sign-extension subtraction") {
-      testAdd(a = 1, res = 1, carry = 1, overflow = 0, carryIn = 1) {
-        _.executeInstruction(makeInstruction(L.Addic, -1))
+      testAdd(a = 2, res = 1, carry = 1, overflow = 0, carryIn = 1) {
+        _.executeInstruction(makeInstruction(L.Addic, -2))
       }
     }
     describe("carry with unsigned math") {
