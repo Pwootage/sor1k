@@ -251,4 +251,10 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     val regA = reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = regA >> bits | regA << (32 - bits)
   }
+
+  def rori(instr: Instruction): Unit = {
+    val bits = instr.imm5
+    val regA = reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = regA >> bits | regA << (32 - bits)
+  }
 }

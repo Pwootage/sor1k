@@ -76,6 +76,12 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Ori) = { instr: Instruction => instructions.ori(instr)}
   opcodeLookupTable(L.Muli) = { instr: Instruction => instructions.muli(instr)}
   opcodeLookupTable(L.Mfspr) = { instr: Instruction => instructions.mfspr(instr)}
+  opcodeLookupTable(L.Rori._1) = { instr: Instruction =>
+    instr.opcode2_bit6 match {
+      case L.Rori._2 => instructions.rori(instr)
+      case _ => throw new IllegalInstructionException("Invalid add opcode2_bitb: " + instr.opcode2_bit6)
+    }
+  }
   opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them

@@ -48,6 +48,7 @@ object InstructionCodes {
     val Ori = 0x2A
     val Muli = 0x2C
     val Mfspr = 0x2D
+    val Rori = (0x2e, 0x3)
     val Mtspr = 0x30
 
     val Add = (0x38, 0x0, 0x0)
@@ -75,22 +76,26 @@ object InstructionCodes {
     (
       opcode: Int,
       opcode2: Int = 0,
+      opcode2_bit6: Int = 0,
       opcode4: Int = 0,
       regD: Int = 0,
       regA: Int = 0,
       regB: Int = 0,
       imm26: Int = 0,
-      imm16: Int = 0
+      imm16: Int = 0,
+      imm6: Int = 0
       ) = this(
       0 |
         (opcode & 0x3f) << 26 |
         (opcode2 & 0x3) << 8 |
+        (opcode2_bit6 & 0x3) << 6 |
         (opcode4 & 0xF) << 0 |
         (regD & 0x1F) << 21 |
         (regA & 0x1F) << 16 |
         (regB & 0x1F) << 11 |
         (imm16 & 0xFFFF) << 0 |
-        (imm26 & 0x3FFFFFF) << 0
+        (imm26 & 0x3FFFFFF) << 0 |
+        (imm6 & 0x3F) << 0
     )
 
     implicit def instrToInt(instr: Instruction) = instr.instr
@@ -99,6 +104,8 @@ object InstructionCodes {
 
     def opcode2 = (instr >>> 8) & 0x3
 
+    def opcode2_bit6 = (instr >>> 6) & 0x3
+
     def opcode4 = (instr >>> 0) & 0xF
 
     def regD = (instr >>> 21) & 0x1F
@@ -106,6 +113,10 @@ object InstructionCodes {
     def regA = (instr >>> 16) & 0x1F
 
     def regB = (instr >>> 11) & 0x1F
+
+    def imm5 = (instr >>> 0) & 0x1F
+
+    def imm6 = (instr >>> 0) & 0x3F
 
     def imm11 = (instr >>> 0) & 0x7FF
 
