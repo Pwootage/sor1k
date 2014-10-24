@@ -38,11 +38,11 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     val instr = mmu.getInstruction(reg.pc)
     executeInstruction(instr)
     if (delaySlot) {
-      reg.pc += 1
+      reg.pc += 4
       delaySlot = false
     } else {
       reg.pc = reg.npc
-      reg.npc = reg.pc + 1
+      reg.npc = reg.pc + 4
     }
   }
 
