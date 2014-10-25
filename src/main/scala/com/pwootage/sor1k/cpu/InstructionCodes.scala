@@ -31,6 +31,8 @@ object InstructionCodes {
     val Bnf = 0x3
     val Bf = 0x4
     val Movhi = 0x6
+    val Sys = (0x8, 0x2000)
+    val Trp = (0x8, 0x2100)
     val Rfe = 0x9
     val Jr = 0x11
     val Jalr = 0x12
@@ -66,13 +68,17 @@ object InstructionCodes {
     val Sflesi = (0x2F, 0xD)
 
     val Mtspr = 0x30
+    val Swa = 0x33
+    val Sw = 0x35
     val Sb = 0x36
     val Sh = 0x37
 
     val Add = (0x38, 0x0, 0x0)
     val Addc = (0x38, 0x0, 0x1)
+    val Sub = (0x38, 0x0, 0x2)
     val And = (0x38, 0x0, 0x3)
     val Or = (0x38, 0x0, 0x4)
+    val Xor = (0x38, 0x0, 0x5)
     val Mul = (0x38, 0x3, 0x6)
 
     val Sll = (0x38, 0x0, 0x8)
@@ -136,6 +142,8 @@ object InstructionCodes {
     implicit def instrToInt(instr: Instruction) = instr.instr
 
     def opcode = (instr >>> 26) & 0x3f
+
+    def opcode16 = (instr >>> 16) & 0xFFFF
 
     def opcode2 = (instr >>> 8) & 0x3
 

@@ -59,6 +59,13 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
   opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
   opcodeLookupTable(L.Movhi) = { instr: Instruction => instructions.movhi(instr)}
+  opcodeLookupTable(L.Sys._1) = { instr: Instruction =>
+    instr.opcode16 match {
+      case L.Sys._2 => instructions.sys(instr)
+      case L.Trp._2 => instructions.trp(instr)
+      case _ => throw new IllegalInstructionException("Invalid opcode16: " + instr.opcode16)
+    }
+  }
   opcodeLookupTable(L.Rfe) = { instr: Instruction => instructions.rfe(instr)}
   opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
   opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
@@ -101,6 +108,8 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     }
   }
   opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
+  opcodeLookupTable(L.Swa) = { instr: Instruction => instructions.swa(instr)}
+  opcodeLookupTable(L.Sw) = { instr: Instruction => instructions.sw(instr)}
   opcodeLookupTable(L.Sb) = { instr: Instruction => instructions.sb(instr)}
   opcodeLookupTable(L.Sh) = { instr: Instruction => instructions.sh(instr)}
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
@@ -109,8 +118,10 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     instr.opcode4 match {
       case L.Add._3 => instructions.add(instr)
       case L.Addc._3 => instructions.addc(instr)
+      case L.Sub._3 => instructions.sub(instr)
       case L.And._3 => instructions.and(instr)
       case L.Or._3 => instructions.or(instr)
+      case L.Xor._3 => instructions.xor(instr)
       case L.Mul._3 => instructions.mul(instr)
       case L.Sll._3 => instr.opcode2 match {
         case L.Sll._2 => instructions.sll(instr)

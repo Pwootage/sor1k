@@ -352,4 +352,37 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
     val shift = instr.imm5
     reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) >>> shift
   }
+
+  def sub(instr: Instruction): Unit = {
+    reg.gpCtx(instr.regB) = -reg.gpCtx(instr.regB)
+    add(instr)
+  }
+
+  def sw(instr: Instruction): Unit = {
+    val ea = instr.regA + instr.imm16_split.toShort
+    mmu.setInt(ea, reg.gpCtx(instr.regB))
+  }
+
+  def swa(instr: Instruction): Unit = {
+    val ea = instr.regA + instr.imm16_split.toShort
+    mmu.setInt(ea, reg.gpCtx(instr.regB))
+  }
+
+  def sys(instr: Instruction): Unit = {
+    //TODO: Exceptions!
+    ???
+  }
+
+  def trp(instr: Instruction): Unit = {
+    //TODO: Exceptions!
+    ???
+  }
+
+  def xor(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) ^ reg.gpCtx(instr.regB)
+  }
+
+  def xori(instr: Instruction) = {
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) ^ instr.imm16.toShort
+  }
 }
