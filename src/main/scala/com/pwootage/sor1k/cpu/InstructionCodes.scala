@@ -108,8 +108,21 @@ object InstructionCodes {
     val Sfges = (0x39, 0xB)
     val Sflts = (0x39, 0xC)
     val Sfles = (0x39, 0xD)
+  }
 
-
+  object InterruptVector {
+    val Reset = 0x100
+    val BusError = 0x200
+    val DataPageFault = 0x300
+    val InstructionPageFault = 0x400
+    val TickTimer = 0x500
+    val Alignment = 0x600
+    val IllegalInstruction = 0x700
+    val ExternalInterrupt = 0x800
+    val Range = 0xB00
+    val SystemCall = 0xC00
+    val FloatingPoint = 0xC00
+    val Trap = 0xE00
   }
 
   //these methods *should* be inlined by compiler/jvm

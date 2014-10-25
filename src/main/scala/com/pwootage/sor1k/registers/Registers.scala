@@ -125,7 +125,12 @@ class Registers {
 
   /** Supervisory Register */
   val sr = new SupervisoryRegister
-  spr(0)(17) = sr
+
+  val npcSpr  = new SpecialPurposeRegister {
+    override def set(v: Int): Unit = Unit
+
+    override def get: Int = npc
+  }
 
   spr(0)(0) = vr
   spr(0)(1) = upr
@@ -135,6 +140,7 @@ class Registers {
   spr(0)(7) = dcfgr
   spr(0)(9) = vr2
   spr(0)(10) = avr
+  spr(0)(16) = npcSpr
   spr(0)(17) = sr
 
   def reset(): Unit = {

@@ -183,5 +183,5 @@ class SupervisoryRegister extends SpecialPurposeRegister {
    * 0 Processor is in User Mode<br/>
    * 1 Processor is in Supervisor Mode
    */
-  var sm = 0
+  var sm = 1
 }

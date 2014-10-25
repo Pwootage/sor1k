@@ -34,6 +34,22 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   /** Indicates whether the CPU should execute a delay slot before going to NPC */
   var delaySlot = false
 
+  def except(vector: Int, pcOff: Int = 0): Unit = {
+    if (delaySlot) {
+      reg.epcr(reg.sr.cid).set(reg.pc - 4 + pcOff)
+    } else {
+      reg.epcr(reg.sr.cid).set(reg.pc + pcOff)
+    }
+    reg.esrr(reg.sr.cid).set(reg.sr.get)
+    reg.sr.dme = 0
+    reg.sr.ime = 0
+    reg.sr.sm = 1
+    reg.sr.iee = 0
+    reg.sr.tee = 0
+    reg.npc = vector
+    delaySlot = false
+  }
+
   def executeStep(): Unit = {
     val instr = mmu.getInstruction(reg.pc)
     executeInstruction(instr)

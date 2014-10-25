@@ -146,7 +146,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def jalr(instr: Instruction): Unit = {
-    reg.lr() = reg.pc + 8
+    reg.lr.set(reg.pc + 8)
     reg.npc = reg.gpCtx(instr.regB)
     or1k.delaySlot = true
   }
@@ -193,7 +193,8 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def mfspr(instr: Instruction): Unit = {
-    val spr = (instr.regA | instr.imm16) & 0xFFFF
+    if (reg.sr.sm == 0) or1k.except(InterruptVector.IllegalInstruction)
+    val spr = (reg.gpCtx(instr.regA) | instr.imm16) & 0xFFFF
     reg.gpCtx(instr.regD) = reg.getSPR(spr >> 11, spr & 0x7FF).get
   }
 
@@ -202,7 +203,8 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def mtspr(instr: Instruction): Unit = {
-    val spr = (instr.regA | instr.imm16_split) & 0xFFFF
+    if (reg.sr.sm == 0) or1k.except(InterruptVector.IllegalInstruction)
+    val spr = (reg.gpCtx(instr.regA) | instr.imm16_split) & 0xFFFF
     reg.getSPR(spr >> 11, spr & 0x7FF).set(reg.gpCtx(instr.regB))
   }
 
@@ -241,8 +243,8 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def rfe(instr: Instruction): Unit = {
-    reg.pc = reg.epcr(reg.sr.cid).get
-    reg.sr() = reg.esrr(reg.sr.cid).get
+    reg.npc = reg.epcr(reg.sr.cid).get
+    reg.sr.set(reg.esrr(reg.sr.cid).get)
   }
 
   def ror(instr: Instruction): Unit = {
@@ -369,13 +371,31 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def sys(instr: Instruction): Unit = {
-    //TODO: Exceptions!
-    ???
+    or1k.except(InterruptVector.SystemCall, 4)
   }
 
   def trp(instr: Instruction): Unit = {
-    //TODO: Exceptions!
-    ???
+    instr.imm16 match {
+      case 0x1 => {
+        nop(0)
+      }
+      case 0x2 => print("0x" + reg.gpCtx(3).toHexString)
+      case 0x10 => {
+        val memStart = reg.gpCtx(3)
+        val cols = 4 * 8 //16 bytes
+        val rows = 16
+        for (i <- 0 until rows) {
+          print("0x" + (memStart + i * cols).formatted("%08x") + ": ")
+          for (j <- 0 until cols) {
+            if (j % 2 == 0) print(" ")
+            if (j % 4 == 0) print(" ")
+            print(mmu.getByte(memStart + i * cols + j).formatted("%02x"))
+          }
+          println()
+        }
+      }
+      case _ => if (reg.sr.sm == 0) or1k.except(InterruptVector.Trap, 4)
+    }
   }
 
   def xor(instr: Instruction) = {
