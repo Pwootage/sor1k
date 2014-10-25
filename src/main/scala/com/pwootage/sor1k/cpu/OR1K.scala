@@ -20,7 +20,7 @@
 
 package com.pwootage.sor1k.cpu
 
-import com.pwootage.sor1k.IllegalInstructionException
+import com.pwootage.sor1k.{CPUException, IllegalInstructionException}
 import com.pwootage.sor1k.cpu.InstructionCodes._
 import com.pwootage.sor1k.memory.MMU
 import com.pwootage.sor1k.registers.Registers
@@ -48,7 +48,12 @@ class OR1K(val reg: Registers, val mmu: MMU) {
 
   def executeInstruction(i: Int): Unit = {
     val ins = new Instruction(i)
-    opcodeLookupTable(ins.opcode)(ins)
+    try {
+      opcodeLookupTable(ins.opcode)(ins)
+    } catch {
+      case e: Throwable => throw new CPUException("CPU crashed at PC 0x" + reg.pc.toHexString, e)
+    }
+
   }
 
   private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
@@ -81,6 +86,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
   opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
   opcodeLookupTable(L.Ori) = { instr: Instruction => instructions.ori(instr)}
+  opcodeLookupTable(L.Xori) = { instr: Instruction => instructions.xori(instr)}
   opcodeLookupTable(L.Muli) = { instr: Instruction => instructions.muli(instr)}
   opcodeLookupTable(L.Mfspr) = { instr: Instruction => instructions.mfspr(instr)}
   opcodeLookupTable(L.Rori._1) = { instr: Instruction =>

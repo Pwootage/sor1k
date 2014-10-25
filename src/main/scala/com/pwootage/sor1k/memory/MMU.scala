@@ -28,6 +28,11 @@ import com.pwootage.sor1k.registers.Registers
  * Memory Management Unit for OpenRisc 1000
  */
 class MMU(val reg: Registers, buff: ByteBuffer) {
+  def putByteArray(bytes: Array[Byte], off: Int) = {
+    buff.position(off)
+    buff.put(bytes)
+  }
+
   private val mainMemory = buff.duplicate().order(ByteOrder.BIG_ENDIAN)
 
   def getInstruction(location: Int) = {

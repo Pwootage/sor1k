@@ -85,12 +85,12 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def bf(instr: Instruction) = if (reg.sr.f > 0) {
-    reg.pc = reg.pc + (instr.imm26 << 6) >> 4
+    reg.npc = reg.pc + ((instr.imm26 << 6) >> 4)
     or1k.delaySlot = true
   }
 
   def bnf(instr: Instruction) = if (reg.sr.f == 0) {
-    reg.pc = reg.pc + (instr.imm26 << 6) >> 4
+    reg.npc = reg.pc + ((instr.imm26 << 6) >> 4)
     or1k.delaySlot = true
   }
 
@@ -135,20 +135,20 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def j(instr: Instruction): Unit = {
-    reg.npc = reg.pc + (instr.imm26 << 6) >> 4
+    reg.npc = reg.pc + ((instr.imm26 << 6) >> 4)
     or1k.delaySlot = true
   }
 
   def jal(instr: Instruction): Unit = {
-    reg.npc = reg.pc + (instr.imm26 << 6) >> 4
+    reg.lr.set(reg.pc + 8)
+    reg.npc = reg.pc + ((instr.imm26 << 6) >> 4)
     or1k.delaySlot = true
-    reg.lr() = reg.pc + 8
   }
 
   def jalr(instr: Instruction): Unit = {
+    reg.lr() = reg.pc + 8
     reg.npc = reg.gpCtx(instr.regB)
     or1k.delaySlot = true
-    reg.lr() = reg.pc + 8
   }
 
   def jr(instr: Instruction): Unit = {
@@ -258,7 +258,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def sb(instr: Instruction): Unit = {
-    val ea = instr.regA + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
     mmu.setByte(ea, reg.gpCtx(instr.regB).toByte)
   }
 
@@ -267,7 +267,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   private def cmpsi(instr: Instruction, op: (Int, Int) => Boolean) = {
-    reg.sr.f = if (op(reg.gpCtx(instr.regA), instr.regB.toShort.toInt)) 1 else 0
+    reg.sr.f = if (op(reg.gpCtx(instr.regA), instr.imm16.toShort)) 1 else 0
   }
 
   private def cmpu(instr: Instruction, op: (Long, Long) => Boolean) = {
@@ -275,7 +275,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   private def cmpui(instr: Instruction, op: (Long, Long) => Boolean) = {
-    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & instr.regB.toShort)) 1 else 0
+    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & instr.imm16.toShort)) 1 else 0
   }
 
   def sfeq(instr: Instruction) = cmps(instr, _ == _)
@@ -319,7 +319,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   def sfnei(instr: Instruction) = cmpsi(instr, _ != _)
 
   def sh(instr: Instruction): Unit = {
-    val ea = instr.regA + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
     mmu.setShort(ea, reg.gpCtx(instr.regB).toShort)
   }
 
@@ -359,7 +359,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def sw(instr: Instruction): Unit = {
-    val ea = instr.regA + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
     mmu.setInt(ea, reg.gpCtx(instr.regB))
   }
 

@@ -30,13 +30,13 @@ object InstructionCodes {
     val Jal = 0x1
     val Bnf = 0x3
     val Bf = 0x4
+    val Nop = 0x5
     val Movhi = 0x6
     val Sys = (0x8, 0x2000)
     val Trp = (0x8, 0x2100)
     val Rfe = 0x9
     val Jr = 0x11
     val Jalr = 0x12
-    val Nop = 0x15
     val Lwa = 0x1B
     val Lwz = 0x21
     val Lws = 0x22
@@ -48,6 +48,7 @@ object InstructionCodes {
     val Addic = 0x28
     val Andi = 0x29
     val Ori = 0x2A
+    val Xori = 0x2B
     val Muli = 0x2C
     val Mfspr = 0x2D
 

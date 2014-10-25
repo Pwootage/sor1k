@@ -71,8 +71,9 @@ class SupervisoryRegister extends SpecialPurposeRegister {
     if (lee > 0) throw new IllegalSRStateException("Little Endian mode not supported")
     if (eph > 0) throw new IllegalSRStateException("Exception-pointer high mode not supported")
     if (dsx > 0) throw new IllegalSRStateException("No delay slot implemented")
-    if (ice > 0) throw new IllegalSRStateException("Instruction cache not supported")
-    if (dce > 0) throw new IllegalSRStateException("Data cache not supported")
+    //ALthough not supported, I can just ignore them, I belive
+    //    if (ice > 0) throw new IllegalSRStateException("Instruction cache not supported")
+    //    if (dce > 0) throw new IllegalSRStateException("Data cache not supported")
   }
 
   /** Current context ID (0-15) */

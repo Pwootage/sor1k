@@ -29,10 +29,8 @@ import collection.mutable
 class Registers {
   /** Current Program Counter */
   var pc = 0
-  /** Last Program Counter */
-  var lpc = pc - 1
   /** Next Program Counter */
-  var npc = pc + 1
+  var npc = pc + 4
 
   /** General purpose registers (16 sets of 32) */
   val gp = new Array[Int](16 * 32)
