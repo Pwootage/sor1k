@@ -18,44 +18,22 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package com.pwootage.sor1k
-
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-import java.nio.file.{Files, Paths, Path}
-
-import com.pwootage.sor1k.cpu.OR1K
-import com.pwootage.sor1k.memory.MMU
-import com.pwootage.sor1k.registers.Registers
+package com.pwootage.sor1k.memory
 
 /**
- * Main entry-point for VM emulation
+ * Represents a device accessible like memory
  */
-object VMMain {
-  def main(args: Array[String]) {
-    val reg = new Registers
-    val mem = new MMU(reg, ByteBuffer.allocate(0x600000)) //6mb of ram
-    val cpu = new OR1K(reg, mem)
+trait MemoryAccess {
 
-    val path = Paths.get("/Users/pwootage/projects/pwix/bin/pwix.bin")
+  def getByte(location: Int): Byte
 
-    val binary = Files.readAllBytes(path)
+  def getShort(location: Int): Short
 
-    mem.putByteArray(binary, 0)
+  def getInt(location: Int): Int
 
-    reg.pc = 0x100 //Entry point
-    reg.npc = 0x104
-    var steps = 0
-    while (true) {
-      steps += 1
-//      println(steps, reg.pc.toHexString)
-      cpu.executeStep()
-      if (reg.pc == 0x2030) {
-        println("Jumping. Probably.")
-      }
-      if (steps % 1000 == 0) {
-        println(s"Executed $steps instructions")
-      }
-    }
-  }
+  def setByte(location: Int, value: Byte)
+
+  def setShort(location: Int, value: Short)
+
+  def setInt(location: Int, value: Int)
 }

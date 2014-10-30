@@ -18,44 +18,30 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package com.pwootage.sor1k
-
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-import java.nio.file.{Files, Paths, Path}
-
-import com.pwootage.sor1k.cpu.OR1K
-import com.pwootage.sor1k.memory.MMU
-import com.pwootage.sor1k.registers.Registers
+package com.pwootage.sor1k.memory
 
 /**
- * Main entry-point for VM emulation
+ * Memory access with proxy methods for storing things larger than bytes, to make it a bit easier
  */
-object VMMain {
-  def main(args: Array[String]) {
-    val reg = new Registers
-    val mem = new MMU(reg, ByteBuffer.allocate(0x600000)) //6mb of ram
-    val cpu = new OR1K(reg, mem)
+abstract class ByteMemoryAccess extends MemoryAccess {
+  override def getShort(location: Int): Short = {
+    (getByte(location + 1) | (getByte(location) << 8)).toShort
+  }
 
-    val path = Paths.get("/Users/pwootage/projects/pwix/bin/pwix.bin")
+  override def getInt(location: Int): Int = {
+    getByte(location + 3) | (getByte(location + 2) << 8) |
+      getByte(location + 1) << 16 | (getByte(location) << 24)
+  }
 
-    val binary = Files.readAllBytes(path)
+  override def setShort(location: Int, value: Short): Unit = {
+    setByte(location + 1, (value & 0xFF).toByte)
+    setByte(location, ((value >> 8) & 0xFF).toByte)
+  }
 
-    mem.putByteArray(binary, 0)
-
-    reg.pc = 0x100 //Entry point
-    reg.npc = 0x104
-    var steps = 0
-    while (true) {
-      steps += 1
-//      println(steps, reg.pc.toHexString)
-      cpu.executeStep()
-      if (reg.pc == 0x2030) {
-        println("Jumping. Probably.")
-      }
-      if (steps % 1000 == 0) {
-        println(s"Executed $steps instructions")
-      }
-    }
+  override def setInt(location: Int, value: Int): Unit = {
+    setByte(location + 3, (value & 0xFF).toByte)
+    setByte(location + 2, ((value >> 8) & 0xFF).toByte)
+    setByte(location + 1, ((value >> 16) & 0xFF).toByte)
+    setByte(location, ((value >> 24) & 0xFF).toByte)
   }
 }

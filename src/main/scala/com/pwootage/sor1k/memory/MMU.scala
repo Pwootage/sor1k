@@ -22,44 +22,86 @@ package com.pwootage.sor1k.memory
 
 import java.nio.{ByteOrder, ByteBuffer}
 
+import com.pwootage.sor1k.{IllegalMemoryAccessException, IllegalDeviceOffsetException}
 import com.pwootage.sor1k.registers.Registers
 
 /**
  * Memory Management Unit for OpenRisc 1000
  */
-class MMU(val reg: Registers, buff: ByteBuffer) {
-  def putByteArray(bytes: Array[Byte], off: Int) = {
-    buff.position(off)
-    buff.put(bytes)
-  }
-
+class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   private val mainMemory = buff.duplicate().order(ByteOrder.BIG_ENDIAN)
+  private val devices = new Array[MemoryAccess](0x100)
 
   def getInstruction(location: Int) = {
     mainMemory.getInt(location)
   }
 
-  def getByte(location: Int) = {
-    mainMemory.get(location)
+  /**
+   * Registers a device as the device ID specified at 0x9XX00000 where XX is device ID
+   */
+  def registerDevice(device: MemoryAccess, deviceID: Int) = {
+    if (deviceID < 0 || deviceID > 0xFF) {
+      throw new IllegalDeviceOffsetException(s"Illegal device offset specified($deviceID), must be 0 to 255")
+    }
+    devices(deviceID) = device
   }
 
-  def getShort(location: Int) = {
-    mainMemory.getShort(location)
+  def putByteArray(bytes: Array[Byte], off: Int) = {
+    buff.position(off)
+    buff.put(bytes)
   }
 
-  def getInt(location: Int) = {
-    mainMemory.getInt(location)
+  override def getByte(location: Int) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.get(location)
+    }
   }
 
-  def setByte(location: Int, value: Byte) = {
-    mainMemory.put(location, value)
+  override def getShort(location: Int) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.getShort(location)
+    }
   }
 
-  def setShort(location: Int, value: Short) = {
-    mainMemory.putShort(location, value)
+  override def getInt(location: Int) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.getInt(location)
+    }
   }
 
-  def setInt(location: Int, value: Int) = {
-    mainMemory.putInt(location, value)
+  override def setByte(location: Int, value: Byte) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.put(location, value)
+    }
+  }
+
+  override def setShort(location: Int, value: Short) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.putShort(location, value)
+    }
+  }
+
+  override def setInt(location: Int, value: Int) = {
+    if (location < 0) {
+      val devid = (location & 0x0FF00000) >> 20
+      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+    } else {
+      mainMemory.putInt(location, value)
+    }
   }
 }

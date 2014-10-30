@@ -39,3 +39,14 @@ class IllegalSRStateException(msg: String, cause: Throwable = null) extends CPUE
  * Indicates the CPU found an unkonwn instruction
  */
 class IllegalInstructionException(msg: String, cause: Throwable = null) extends CPUException(msg, cause)
+
+/**
+ * Indicates a device was attempted to be mapped to an invalid address
+ */
+class IllegalDeviceOffsetException(msg: String, cause: Throwable = null) extends CPUException(msg, cause)
+
+/**
+ * Indicates the CPU attempted to access an invalid memory address.
+ * Usually triggers a bus error inside the CPU, where it is caught.
+ */
+class IllegalMemoryAccessException(msg: String, cause: Throwable = null) extends CPUException(msg, cause)

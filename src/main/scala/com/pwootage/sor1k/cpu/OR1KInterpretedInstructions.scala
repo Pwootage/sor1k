@@ -20,6 +20,8 @@
 
 package com.pwootage.sor1k.cpu
 
+import com.pwootage.sor1k.{IllegalMemoryAccessException, IllegalCPUStateException}
+
 /**
  * Contains interpreted implementations of OpenRISC instructions
  */
@@ -358,15 +360,18 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   def sub(instr: Instruction): Unit = {
     reg.gpCtx(instr.regB) = -reg.gpCtx(instr.regB)
     add(instr)
+    reg.gpCtx(instr.regB) = -reg.gpCtx(instr.regB)
   }
 
   def sw(instr: Instruction): Unit = {
     val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
-    mmu.setInt(ea, reg.gpCtx(instr.regB))
+    try mmu.setInt(ea, reg.gpCtx(instr.regB)) catch {
+      case e: IndexOutOfBoundsException => throw new IllegalMemoryAccessException(s"Attempted to access location ${ea.formatted("%08x")}", e)
+    }
   }
 
   def swa(instr: Instruction): Unit = {
-    val ea = instr.regA + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
     mmu.setInt(ea, reg.gpCtx(instr.regB))
   }
 
@@ -380,6 +385,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
         nop(0)
       }
       case 0x2 => print("0x" + reg.gpCtx(3).toHexString)
+      case 0x3 => print(String.valueOf(reg.gpCtx(3).toChar))
       case 0x10 => {
         val memStart = reg.gpCtx(3)
         val cols = 4 * 8 //16 bytes

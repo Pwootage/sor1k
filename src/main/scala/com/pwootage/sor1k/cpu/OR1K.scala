@@ -62,12 +62,30 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     }
   }
 
+  def dumpRegistersAndInstruction(): Unit = {
+    val instr = try mmu.getInstruction(reg.pc) catch {case e: Throwable => -1 }
+    val parsed = Instruction(instr)
+    val fmt = "%08x"
+    println(s"CPU state: PC = 0x${reg.pc.formatted(fmt)}, NPC = 0x${reg.npc.formatted(fmt)}, [PC] = 0x${instr.formatted(fmt)}")
+    println(s"Insruction: opcode = 0x${parsed.opcode.formatted("%02x")}, regD = ${parsed.regD}, regA = ${parsed.regA}, regB = ${parsed.regB}")
+    println("Registers:")
+    for (i <- 0 until 8) {
+      print(s"${(i*4).formatted("%02d")} ")
+      for (j <- 0 until 4) {
+        print(s"${reg.gpCtx(i * 4 + j).formatted(fmt)} ")
+      }
+      println()
+    }
+  }
+
   def executeInstruction(i: Int): Unit = {
     val ins = new Instruction(i)
     try {
       opcodeLookupTable(ins.opcode)(ins)
     } catch {
-      case e: Throwable => throw new CPUException("CPU crashed at PC 0x" + reg.pc.toHexString, e)
+      case e: Throwable =>
+        dumpRegistersAndInstruction()
+        throw new CPUException("CPU crashed at PC 0x" + reg.pc.toHexString, e)
     }
 
   }
