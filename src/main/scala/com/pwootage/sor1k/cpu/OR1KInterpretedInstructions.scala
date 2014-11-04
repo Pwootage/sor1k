@@ -193,7 +193,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def lwz(instr: Int): Unit = {
     val ea = ((I.imm16(instr) << 16) >> 16) + reg.gp(I.regA(instr))
-    reg.gp(I.regD(instr)) = mmu .getInt(ea)
+    reg.gp(I.regD(instr)) = mmu.getInt(ea)
   }
 
   def mfspr(instr: Int): Unit = {
