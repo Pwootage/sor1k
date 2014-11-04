@@ -179,7 +179,7 @@ object InstructionCodes {
 
     def imm16 = (instr >>> 0) & 0xFFFF
 
-    def imm16_split = instr.imm11 | (instr.regD << 11)
+    def imm16_split = ((instr >>> 10) & 0xF800) | ((instr >>> 0) & 0x7FF)
 
     def imm26 = (instr >>> 0) & 0x3FFFFFF
   }
