@@ -6,12 +6,20 @@
 
 -target 1.6
 -optimizationpasses 20
+-optimizations !method/inlining/unique
 -allowaccessmodification
 -dontobfuscate
 -printseeds seeds.txt
 -printusage usage.txt
--whyareyoukeeping class com.pwootage.**
+-whyareyoukeeping class com.pwootage.sor1k.cpu.InstructionCodes$I$ {
+ *;
+}
 
+-verbose
+
+-assumenosideeffects class com.pwootage.sor1k.cpu.InstructionCodes$I$ {
+    int *;
+}
 
 # Keep - Applications. Keep all application classes, along with their 'main'
 # methods.
