@@ -32,21 +32,22 @@ class Registers {
   /** Next Program Counter */
   var npc = pc + 4
 
-  /** General purpose registers (16 sets of 32) */
-  val gp = new Array[Int](16 * 32)
+  /** General purpose registers (32) */
+  val gp = new Array[Int](32)
+//  val gp = new Array[Int](16 * 32)
 
   val lr = new SpecialPurposeRegister {
-    override def set(v: Int): Unit = gpCtx.update(9, v)
+    override def set(v: Int): Unit = gp.update(9, v)
 
-    override def get: Int = gpCtx.apply(9)
+    override def get: Int = gp.apply(9)
   }
 
-  /** Get GPR for current context */
-  object gpCtx {
-    def apply(ind: Int) = gp(sr.cid * 32 + ind)
-
-    def update(ind: Int, v: Int) = gp.update(sr.cid * 32 + ind, v)
-  }
+//  /** Get GPR for current context */
+//  object gpCtx {
+//    def apply(ind: Int) = gp(sr.cid * 32 + ind)
+//
+//    def update(ind: Int, v: Int) = gp.update(sr.cid * 32 + ind, v)
+//  }
 
   val spr = new Array[mutable.Map[Int, SpecialPurposeRegister]](32)
   for (i <- 0 until spr.length) spr(i) = mutable.Map[Int, SpecialPurposeRegister]()
@@ -86,7 +87,6 @@ class Registers {
   /** CPU Configuration Register */
   val cpucfgr = new ReadOnlySPR(
     0 |
-      (15 << 0) | //15 Shadow GPR's
       (1 << 5) //ORBIS32
   )
 
@@ -105,23 +105,11 @@ class Registers {
   /** Archetecture Version Register */
   val avr = new ReadOnlySPR(1)
 
-  val epcr = new Array[BasicSPR](16)
-  for (i <- 0 until 16) {
-    epcr(i) = new BasicSPR
-    spr(0)(32 + i) = epcr(i)
-  }
+  val epcr = new BasicSPR
 
-  val eear = new Array[BasicSPR](16)
-  for (i <- 0 until 16) {
-    eear(i) = new BasicSPR
-    spr(0)(48 + i) = eear(i)
-  }
+  val eear = new BasicSPR
 
-  val esrr = new Array[BasicSPR](16)
-  for (i <- 0 until 16) {
-    esrr(i) = new BasicSPR
-    spr(0)(64 + i) = esrr(i)
-  }
+  val esrr = new BasicSPR
 
   /** Supervisory Register */
   val sr = new SupervisoryRegister
@@ -148,9 +136,9 @@ class Registers {
       (1 << 15) | //FO
       (1 << 0) //Supervisor Mode
     for (i <- 0 until gp.size) gp(i) = 0
-    epcr.foreach(_.set(0))
-    eear.foreach(_.set(0))
-    esrr.foreach(_.set(0))
+    epcr.set(0)
+    eear.set(0)
+    esrr.set(0)
   }
 
   reset() //"reset" to init

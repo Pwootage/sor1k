@@ -39,55 +39,55 @@ class RorSpec extends BaseSpec {
   describe("l.ror") {
     describe("rotate right 0 bits") {
       withCPU { or1k =>
-        or1k.reg.gpCtx(1) = 0x12345678
-        or1k.reg.gpCtx(2) = 0
+        or1k.reg.gp(1) = 0x12345678
+        or1k.reg.gp(2) = 0
         or1k.executeInstruction(instr)
         it("should have the correct value") {
-          or1k.reg.gpCtx(3) should be (0x12345678)
+          or1k.reg.gp(3) should be (0x12345678)
         }
       }
     }
 
     describe("rotate right 32 bits") {
       withCPU { or1k =>
-        or1k.reg.gpCtx(1) = 0x12345678
-        or1k.reg.gpCtx(2) = 32
+        or1k.reg.gp(1) = 0x12345678
+        or1k.reg.gp(2) = 32
         or1k.executeInstruction(instr)
         it("should have the correct value") {
-          or1k.reg.gpCtx(3) should be (0x12345678)
+          or1k.reg.gp(3) should be (0x12345678)
         }
       }
     }
 
     describe("rotate right 1 bit") {
       withCPU { or1k =>
-        or1k.reg.gpCtx(1) = 0x12345678
-        or1k.reg.gpCtx(2) = 1
+        or1k.reg.gp(1) = 0x12345678
+        or1k.reg.gp(2) = 1
         or1k.executeInstruction(instr)
         it("should have the correct value") {
-          or1k.reg.gpCtx(3) should be (0x91A2B3C)
+          or1k.reg.gp(3) should be (0x91A2B3C)
         }
       }
     }
 
     describe("rotate right 16 bits") {
       withCPU { or1k =>
-        or1k.reg.gpCtx(1) = 0x12345678
-        or1k.reg.gpCtx(2) = 16
+        or1k.reg.gp(1) = 0x12345678
+        or1k.reg.gp(2) = 16
         or1k.executeInstruction(instr)
         it("should have the correct value") {
-          or1k.reg.gpCtx(3) should be (0x56781234)
+          or1k.reg.gp(3) should be (0x56781234)
         }
       }
     }
 
     describe("rotate right 31 bits") {
       withCPU { or1k =>
-        or1k.reg.gpCtx(1) = 0x12345678
-        or1k.reg.gpCtx(2) = 31
+        or1k.reg.gp(1) = 0x12345678
+        or1k.reg.gp(2) = 31
         or1k.executeInstruction(instr)
         it("should have the correct value") {
-          or1k.reg.gpCtx(3) should be (0x2468ACF0)
+          or1k.reg.gp(3) should be (0x2468ACF0)
         }
       }
     }

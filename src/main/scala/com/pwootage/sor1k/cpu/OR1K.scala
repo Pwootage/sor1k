@@ -37,11 +37,11 @@ class OR1K(val reg: Registers, val mmu: MMU) {
 
   def except(vector: Int, pcOff: Int = 0): Unit = {
     if (delaySlot) {
-      reg.epcr(reg.sr.cid).set(reg.pc - 4 + pcOff)
+      reg.epcr.set(reg.pc - 4 + pcOff)
     } else {
-      reg.epcr(reg.sr.cid).set(reg.pc + pcOff)
+      reg.epcr.set(reg.pc + pcOff)
     }
-    reg.esrr(reg.sr.cid).set(reg.sr.get)
+    reg.esrr.set(reg.sr.get)
     reg.sr.dme = 0
     reg.sr.ime = 0
     reg.sr.sm = 1
@@ -75,7 +75,7 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     for (i <- 0 until 8) {
       print(s"${(i * 4).formatted("%02d")} ")
       for (j <- 0 until 4) {
-        print(s"${reg.gpCtx(i * 4 + j).formatted(fmt)} ")
+        print(s"${reg.gp(i * 4 + j).formatted(fmt)} ")
       }
       println()
     }

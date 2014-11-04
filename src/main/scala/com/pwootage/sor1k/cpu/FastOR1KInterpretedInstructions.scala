@@ -36,37 +36,37 @@ class FastOR1KInterpretedInstructions(or1k: OR1K) extends OR1KInterpretedInstruc
   import com.pwootage.sor1k.cpu.InstructionCodes._
 
   override def add(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) + reg.gpCtx(instr.regB)
+    reg.gp(instr.regD) = reg.gp(instr.regA) + reg.gp(instr.regB)
   }
 
   override def addc(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + reg.gpCtx(instr.regB)
+    reg.gp(instr.regD)  = reg.gp(instr.regA) + reg.gp(instr.regB)
   }
 
   override def addi(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + ((instr.imm16 << 16) >> 16)
+    reg.gp(instr.regD)  = reg.gp(instr.regA) + ((instr.imm16 << 16) >> 16)
   }
 
   override def addic(instr: Instruction) = {
-    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + ((instr.imm16 << 16) >> 16)
+    reg.gp(instr.regD)  = reg.gp(instr.regA) + ((instr.imm16 << 16) >> 16)
   }
 
   override def mul(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) * reg.gpCtx(instr.regB)
+    reg.gp(instr.regD) = reg.gp(instr.regA) * reg.gp(instr.regB)
   }
 
   override def muli(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) * ((instr.imm16 << 16) >> 16)
+    reg.gp(instr.regD) = reg.gp(instr.regA) * ((instr.imm16 << 16) >> 16)
   }
 
   override def mulu(instr: Instruction): Unit = {
-    val regA: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regA).toLong
-    val regB: Long = 0xFFFFFFFFL & reg.gpCtx(instr.regB).toLong
+    val regA: Long = 0xFFFFFFFFL & reg.gp(instr.regA).toLong
+    val regB: Long = 0xFFFFFFFFL & reg.gp(instr.regB).toLong
     val regD = regA * regB
-    reg.gpCtx(instr.regD) = regD.toInt
+    reg.gp(instr.regD) = regD.toInt
   }
 
   override def sub(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) - reg.gpCtx(instr.regB)
+    reg.gp(instr.regD) = reg.gp(instr.regA) - reg.gp(instr.regB)
   }
 }
