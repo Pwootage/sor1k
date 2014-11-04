@@ -29,7 +29,8 @@ import com.pwootage.sor1k.registers.Registers
  * CPU core for OpenRisc 1000
  */
 class OR1K(val reg: Registers, val mmu: MMU) {
-  val instructions = new OR1KInterpretedInstructions(this)
+//  val instructions = new OR1KInterpretedInstructions(this)
+  val instructions = new FastOR1KInterpretedInstructions(this)
 
   /** Indicates whether the CPU should execute a delay slot before going to NPC */
   var delaySlot = false

@@ -23,7 +23,9 @@ package com.pwootage.sor1k.cpu
 import com.pwootage.sor1k.{IllegalMemoryAccessException, IllegalCPUStateException}
 
 /**
- * Contains interpreted implementations of OpenRISC instructions
+ * Contains interpreted implementations of OpenRISC instructions<br/><br/>
+ *
+ * TODO: apparently FastOR1K is not broken but this is. Figure out what.
  */
 class OR1KInterpretedInstructions(or1k: OR1K) {
   val reg = or1k.reg
@@ -220,7 +222,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def muli(instr: Instruction): Unit = {
     val regA = reg.gpCtx(instr.regA)
-    val regB = instr.imm16
+    val regB = instr.imm16.toShort
     reg.gpCtx(instr.regD) = regA * regB
     val regDLong = regA.toLong * regB.toLong
     reg.sr.ov = if (regDLong > Int.MaxValue || regDLong < Int.MinValue) 1 else 0
@@ -400,6 +402,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
           println()
         }
       }
+      case 0xFF => throw new IllegalCPUStateException("Got kill command!");
       case _ => if (reg.sr.sm == 0) or1k.except(InterruptVector.Trap, 4)
     }
   }

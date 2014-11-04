@@ -45,16 +45,33 @@ object VMMain {
 
     reg.pc = 0x100 //Entry point
     reg.npc = 0x104
-    var steps = 0
-    while (true) {
-      steps += 1
-//      println(steps, reg.pc.toHexString)
-      cpu.executeStep()
-      if (reg.pc == 0x2030) {
-        println("Jumping. Probably.")
+    var steps: Long = 0
+    var debug = false
+    val start = System.currentTimeMillis()
+    try {
+
+      while (true) {
+        steps += 1
+        //      println(steps, reg.pc.toHexString)
+        //      if (debug || cpu.reg.pc == 0x27e0 && steps >= 967248 || steps == 3820) {
+        //        debug = true
+        //        cpu.dumpRegistersAndInstruction()
+        //        println(s"Breakpoint @ $steps!")
+        //      }
+        cpu.executeStep()
+        if (steps % 10000 == 0) {
+          //        println(s"Executed $steps instructions")
+          //        cpu.dumpRegistersAndInstruction()
+        }
       }
-      if (steps % 1000 == 0) {
-        println(s"Executed $steps instructions")
+    } catch {
+      case e: Throwable => {
+        val end = System.currentTimeMillis()
+        val time = end - start
+        val ips = steps * 1000 / time
+        val mips = (ips / 1000000D).formatted("%.4f")
+        println(s"Executed $steps instructions in $time ms ($ips IPS/$mips MIPS)!")
+        throw e
       }
     }
   }
