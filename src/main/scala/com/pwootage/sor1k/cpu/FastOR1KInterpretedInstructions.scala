@@ -33,40 +33,39 @@ import com.pwootage.sor1k.IllegalMemoryAccessException
  * </ul>
  */
 class FastOR1KInterpretedInstructions(or1k: OR1K) extends OR1KInterpretedInstructions(or1k){
-  import com.pwootage.sor1k.cpu.InstructionCodes._
+  import com.pwootage.sor1k.cpu.InstructionCodes.I
 
-  override def add(instr: Instruction): Unit = {
-    reg.gp(instr.regD) = reg.gp(instr.regA) + reg.gp(instr.regB)
+  override def add(instr: Int): Unit = {
+    reg.gp(I.regD(instr)) = reg.gp(I.regA(instr)) + reg.gp(I.regB(instr))
   }
 
-  override def addc(instr: Instruction): Unit = {
-    reg.gp(instr.regD)  = reg.gp(instr.regA) + reg.gp(instr.regB)
+  override def addc(instr: Int): Unit = {
+    reg.gp(I.regD(instr))  = reg.gp(I.regA(instr)) + reg.gp(I.regB(instr))
   }
 
-  override def addi(instr: Instruction): Unit = {
-    reg.gp(instr.regD)  = reg.gp(instr.regA) + ((instr.imm16 << 16) >> 16)
+  override def addi(instr: Int): Unit = {
+    reg.gp(I.regD(instr))  = reg.gp(I.regA(instr)) + ((I.imm16(instr) << 16) >> 16)
   }
 
-  override def addic(instr: Instruction) = {
-    reg.gp(instr.regD)  = reg.gp(instr.regA) + ((instr.imm16 << 16) >> 16)
+  override def addic(instr: Int) = {
+    reg.gp(I.regD(instr))  = reg.gp(I.regA(instr)) + ((I.imm16(instr) << 16) >> 16)
   }
 
-  override def mul(instr: Instruction): Unit = {
-    reg.gp(instr.regD) = reg.gp(instr.regA) * reg.gp(instr.regB)
+  override def mul(instr: Int): Unit = {
+    reg.gp(I.regD(instr)) = reg.gp(I.regA(instr)) * reg.gp(I.regB(instr))
   }
 
-  override def muli(instr: Instruction): Unit = {
-    reg.gp(instr.regD) = reg.gp(instr.regA) * ((instr.imm16 << 16) >> 16)
+  override def muli(instr: Int): Unit = {
+    reg.gp(I.regD(instr)) = reg.gp(I.regA(instr)) * ((I.imm16(instr) << 16) >> 16)
   }
 
-  override def mulu(instr: Instruction): Unit = {
-    val regA: Long = 0xFFFFFFFFL & reg.gp(instr.regA).toLong
-    val regB: Long = 0xFFFFFFFFL & reg.gp(instr.regB).toLong
-    val regD = regA * regB
-    reg.gp(instr.regD) = regD.toInt
+  override def mulu(instr: Int): Unit = {
+    val regA: Long = 0xFFFFFFFFL & reg.gp(I.regA(instr)).toLong
+    val regB: Long = 0xFFFFFFFFL & reg.gp(I.regB(instr)).toLong
+    reg.gp(I.regD(instr)) = (regA * regB).toInt
   }
 
-  override def sub(instr: Instruction): Unit = {
-    reg.gp(instr.regD) = reg.gp(instr.regA) - reg.gp(instr.regB)
+  override def sub(instr: Int): Unit = {
+    reg.gp(I.regD(instr)) = reg.gp(I.regA(instr)) - reg.gp(I.regB(instr))
   }
 }

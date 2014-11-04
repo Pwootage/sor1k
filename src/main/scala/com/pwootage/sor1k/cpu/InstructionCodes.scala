@@ -189,8 +189,38 @@ object InstructionCodes {
     val Trap = 0xE00
   }
 
+  object I {
+    def opcode(instr: Int) = (instr >>> 26) & 0x3f
+
+    def opcode16(instr: Int) = (instr >>> 16) & 0xFFFF
+
+    def opcode2(instr: Int) = (instr >>> 8) & 0x3
+
+    def opcode2_bit6(instr: Int) = (instr >>> 6) & 0x3
+
+    def opcode4(instr: Int) = (instr >>> 0) & 0xF
+
+    def regD(instr: Int) = (instr >>> 21) & 0x1F
+
+    def regA(instr: Int) = (instr >>> 16) & 0x1F
+
+    def regB(instr: Int) = (instr >>> 11) & 0x1F
+
+    def imm5(instr: Int) = (instr >>> 0) & 0x1F
+
+    def imm6(instr: Int) = (instr >>> 0) & 0x3F
+
+    def imm11(instr: Int) = (instr >>> 0) & 0x7FF
+
+    def imm16(instr: Int) = (instr >>> 0) & 0xFFFF
+
+    def imm16_split(instr: Int) = ((instr >>> 10) & 0xF800) | ((instr >>> 0) & 0x7FF)
+
+    def imm26(instr: Int) = (instr >>> 0) & 0x3FFFFFF
+  }
+
   //these methods *should* be inlined by compiler/jvm
-  implicit class Instruction(val instr: Int) {
+  class Instruction(val instr: Int) {
     def this
     (
       opcode: Int,
