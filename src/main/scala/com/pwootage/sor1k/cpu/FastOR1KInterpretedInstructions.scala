@@ -44,11 +44,11 @@ class FastOR1KInterpretedInstructions(or1k: OR1K) extends OR1KInterpretedInstruc
   }
 
   override def addi(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + instr.imm16.toShort
+    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + ((instr.imm16 << 16) >> 16)
   }
 
   override def addic(instr: Instruction) = {
-    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + instr.imm16.toShort
+    reg.gpCtx(instr.regD)  = reg.gpCtx(instr.regA) + ((instr.imm16 << 16) >> 16)
   }
 
   override def mul(instr: Instruction): Unit = {
@@ -56,7 +56,7 @@ class FastOR1KInterpretedInstructions(or1k: OR1K) extends OR1KInterpretedInstruc
   }
 
   override def muli(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) * instr.imm16.toShort
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) * ((instr.imm16 << 16) >> 16)
   }
 
   override def mulu(instr: Instruction): Unit = {

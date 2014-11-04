@@ -29,7 +29,7 @@ import com.pwootage.sor1k.registers.Registers
  * CPU core for OpenRisc 1000
  */
 class OR1K(val reg: Registers, val mmu: MMU) {
-//  val instructions = new OR1KInterpretedInstructions(this)
+  //  val instructions = new OR1KInterpretedInstructions(this)
   val instructions = new FastOR1KInterpretedInstructions(this)
 
   /** Indicates whether the CPU should execute a delay slot before going to NPC */
@@ -64,14 +64,16 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   }
 
   def dumpRegistersAndInstruction(): Unit = {
-    val instr = try mmu.getInstruction(reg.pc) catch {case e: Throwable => -1 }
+    val instr = try mmu.getInstruction(reg.pc) catch {
+      case e: Throwable => -1
+    }
     val parsed = Instruction(instr)
     val fmt = "%08x"
     println(s"CPU state: PC = 0x${reg.pc.formatted(fmt)}, NPC = 0x${reg.npc.formatted(fmt)}, [PC] = 0x${instr.formatted(fmt)}")
     println(s"Insruction: opcode = 0x${parsed.opcode.formatted("%02x")}, regD = ${parsed.regD}, regA = ${parsed.regA}, regB = ${parsed.regB}")
     println("Registers:")
     for (i <- 0 until 8) {
-      print(s"${(i*4).formatted("%02d")} ")
+      print(s"${(i * 4).formatted("%02d")} ")
       for (j <- 0 until 4) {
         print(s"${reg.gpCtx(i * 4 + j).formatted(fmt)} ")
       }
@@ -81,24 +83,17 @@ class OR1K(val reg: Registers, val mmu: MMU) {
 
   def executeInstruction(i: Int): Unit = {
     val ins = new Instruction(i)
-    try {
-      opcodeLookupTable(ins.opcode)(ins)
-    } catch {
-      case e: Throwable =>
-        dumpRegistersAndInstruction()
-        throw new CPUException("CPU crashed at PC 0x" + reg.pc.toHexString, e)
-    }
-
+    opcodeLookupTable(ins.opcode)(ins)
   }
 
   private val opcodeLookupTable = new Array[Instruction => Any](1 << 6)
   for (i <- 0 until opcodeLookupTable.length) opcodeLookupTable(i) = { ins: Instruction => throw new IllegalInstructionException("Found unknown opcode: " + i)}
 
-  opcodeLookupTable(L.J) = { instr: Instruction => instructions.j(instr)}
-  opcodeLookupTable(L.Jal) = { instr: Instruction => instructions.jal(instr)}
-  opcodeLookupTable(L.Bnf) = { instr: Instruction => instructions.bnf(instr)}
-  opcodeLookupTable(L.Bf) = { instr: Instruction => instructions.bf(instr)}
-  opcodeLookupTable(L.Movhi) = { instr: Instruction => instructions.movhi(instr)}
+  opcodeLookupTable(L.J) = instructions.j _
+  opcodeLookupTable(L.Jal) = instructions.jal _
+  opcodeLookupTable(L.Bnf) = instructions.bnf _
+  opcodeLookupTable(L.Bf) = instructions.bf _
+  opcodeLookupTable(L.Movhi) = instructions.movhi _
   opcodeLookupTable(L.Sys._1) = { instr: Instruction =>
     instr.opcode16 match {
       case L.Sys._2 => instructions.sys(instr)
@@ -106,24 +101,24 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case _ => throw new IllegalInstructionException("Invalid opcode16: " + instr.opcode16)
     }
   }
-  opcodeLookupTable(L.Rfe) = { instr: Instruction => instructions.rfe(instr)}
-  opcodeLookupTable(L.Jr) = { instr: Instruction => instructions.jr(instr)}
-  opcodeLookupTable(L.Jalr) = { instr: Instruction => instructions.jalr(instr)}
-  opcodeLookupTable(L.Nop) = { instr: Instruction => instructions.nop(instr)}
-  opcodeLookupTable(L.Lwa) = { instr: Instruction => instructions.lwa(instr)}
-  opcodeLookupTable(L.Lwz) = { instr: Instruction => instructions.lwz(instr)}
-  opcodeLookupTable(L.Lws) = { instr: Instruction => instructions.lws(instr)}
-  opcodeLookupTable(L.Lbz) = { instr: Instruction => instructions.lbz(instr)}
-  opcodeLookupTable(L.Lbs) = { instr: Instruction => instructions.lbs(instr)}
-  opcodeLookupTable(L.Lhz) = { instr: Instruction => instructions.lhz(instr)}
-  opcodeLookupTable(L.Lhs) = { instr: Instruction => instructions.lhs(instr)}
-  opcodeLookupTable(L.Addi) = { instr: Instruction => instructions.addi(instr)}
-  opcodeLookupTable(L.Addic) = { instr: Instruction => instructions.addic(instr)}
-  opcodeLookupTable(L.Andi) = { instr: Instruction => instructions.andi(instr)}
-  opcodeLookupTable(L.Ori) = { instr: Instruction => instructions.ori(instr)}
-  opcodeLookupTable(L.Xori) = { instr: Instruction => instructions.xori(instr)}
-  opcodeLookupTable(L.Muli) = { instr: Instruction => instructions.muli(instr)}
-  opcodeLookupTable(L.Mfspr) = { instr: Instruction => instructions.mfspr(instr)}
+  opcodeLookupTable(L.Rfe) = instructions.rfe _
+  opcodeLookupTable(L.Jr) = instructions.jr _
+  opcodeLookupTable(L.Jalr) = instructions.jalr _
+  opcodeLookupTable(L.Nop) = instructions.nop _
+  opcodeLookupTable(L.Lwa) = instructions.lwa _
+  opcodeLookupTable(L.Lwz) = instructions.lwz _
+  opcodeLookupTable(L.Lws) = instructions.lws _
+  opcodeLookupTable(L.Lbz) = instructions.lbz _
+  opcodeLookupTable(L.Lbs) = instructions.lbs _
+  opcodeLookupTable(L.Lhz) = instructions.lhz _
+  opcodeLookupTable(L.Lhs) = instructions.lhs _
+  opcodeLookupTable(L.Addi) = instructions.addi _
+  opcodeLookupTable(L.Addic) = instructions.addic _
+  opcodeLookupTable(L.Andi) = instructions.andi _
+  opcodeLookupTable(L.Ori) = instructions.ori _
+  opcodeLookupTable(L.Xori) = instructions.xori _
+  opcodeLookupTable(L.Muli) = instructions.muli _
+  opcodeLookupTable(L.Mfspr) = instructions.mfspr _
   opcodeLookupTable(L.Rori._1) = { instr: Instruction =>
     instr.opcode2_bit6 match {
       case L.Slli._2 => instructions.slli(instr)
@@ -148,11 +143,11 @@ class OR1K(val reg: Registers, val mmu: MMU) {
       case _ => throw new IllegalInstructionException("Invalid set flag immediate opcode: " + instr.regD)
     }
   }
-  opcodeLookupTable(L.Mtspr) = { instr: Instruction => instructions.mtspr(instr)}
-  opcodeLookupTable(L.Swa) = { instr: Instruction => instructions.swa(instr)}
-  opcodeLookupTable(L.Sw) = { instr: Instruction => instructions.sw(instr)}
-  opcodeLookupTable(L.Sb) = { instr: Instruction => instructions.sb(instr)}
-  opcodeLookupTable(L.Sh) = { instr: Instruction => instructions.sh(instr)}
+  opcodeLookupTable(L.Mtspr) = instructions.mtspr _
+  opcodeLookupTable(L.Swa) = instructions.swa _
+  opcodeLookupTable(L.Sw) = instructions.sw _
+  opcodeLookupTable(L.Sb) = instructions.sb _
+  opcodeLookupTable(L.Sh) = instructions.sh _
   opcodeLookupTable(L.Add._1) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
     //ie there is one method call per case -.-

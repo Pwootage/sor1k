@@ -47,6 +47,8 @@ object VMMain {
     reg.npc = 0x104
     var steps: Long = 0
     var debug = false
+    println("Press 'enter' to start...")
+    scala.io.StdIn.readLine()
     val start = System.currentTimeMillis()
     try {
 
@@ -66,12 +68,13 @@ object VMMain {
       }
     } catch {
       case e: Throwable => {
+        cpu.dumpRegistersAndInstruction()
         val end = System.currentTimeMillis()
         val time = end - start
         val ips = steps * 1000 / time
         val mips = (ips / 1000000D).formatted("%.4f")
         println(s"Executed $steps instructions in $time ms ($ips IPS/$mips MIPS)!")
-        throw e
+        throw new CPUException("CPU crashed at PC 0x" + reg.pc.toHexString, e)
       }
     }
   }

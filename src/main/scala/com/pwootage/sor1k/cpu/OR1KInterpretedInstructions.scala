@@ -63,7 +63,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def addi(instr: Instruction): Unit = {
     val regA = reg.gpCtx(instr.regA)
-    val b = instr.imm16.toShort
+    val b = (instr.imm16 << 16) >> 16
     val regD = regA + b
     reg.gpCtx(instr.regD) = regD
     reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
@@ -72,7 +72,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def addic(instr: Instruction) = {
     val regA = reg.gpCtx(instr.regA)
-    val b = instr.imm16.toShort.toInt
+    val b = (instr.imm16 << 16) >> 16
     val regD = regA + b + reg.sr.cy
     reg.gpCtx(instr.regD) = regD
     reg.sr.cy = if ((0xFFFFFFFFL & regD) < (0xFFFFFFFFL & regA)) 1 else 0
@@ -123,7 +123,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def extbs(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA).toByte
+    reg.gpCtx(instr.regD) = (reg.gpCtx(instr.regA) << 24) >> 24
   }
 
   def extbz(instr: Instruction): Unit = {
@@ -131,7 +131,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def exths(instr: Instruction): Unit = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA).toShort
+    reg.gpCtx(instr.regD) = (reg.gpCtx(instr.regA) << 16) >> 16
   }
 
   def exthz(instr: Instruction): Unit = {
@@ -161,39 +161,39 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def lbs(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = mmu.getByte(ea)
   }
 
   def lbz(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = 0xFF & mmu.getByte(ea).toInt
   }
 
   def lhs(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = mmu.getShort(ea)
   }
 
   def lhz(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = 0xFFFF & mmu.getShort(ea).toInt
   }
 
   //All memory access is atomic in this VM
   def lwa(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = mmu.getInt(ea)
   }
 
   def lws(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
     reg.gpCtx(instr.regD) = mmu.getInt(ea)
   }
 
   def lwz(instr: Instruction): Unit = {
-    val ea = instr.imm16.toShort + reg.gpCtx(instr.regA)
-    reg.gpCtx(instr.regD) = mmu.getInt(ea)
+    val ea = ((instr.imm16 << 16) >> 16) + reg.gpCtx(instr.regA)
+    reg.gpCtx(instr.regD) = mmu .getInt(ea)
   }
 
   def mfspr(instr: Instruction): Unit = {
@@ -222,7 +222,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
 
   def muli(instr: Instruction): Unit = {
     val regA = reg.gpCtx(instr.regA)
-    val regB = instr.imm16.toShort
+    val regB = (instr.imm16 << 16) >> 16
     reg.gpCtx(instr.regD) = regA * regB
     val regDLong = regA.toLong * regB.toLong
     reg.sr.ov = if (regDLong > Int.MaxValue || regDLong < Int.MinValue) 1 else 0
@@ -264,7 +264,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def sb(instr: Instruction): Unit = {
-    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + ((instr.imm16_split << 16) >> 16)
     mmu.setByte(ea, reg.gpCtx(instr.regB).toByte)
   }
 
@@ -273,7 +273,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   private def cmpsi(instr: Instruction, op: (Int, Int) => Boolean) = {
-    reg.sr.f = if (op(reg.gpCtx(instr.regA), instr.imm16.toShort)) 1 else 0
+    reg.sr.f = if (op(reg.gpCtx(instr.regA), (instr.imm16 << 16) >> 16)) 1 else 0
   }
 
   private def cmpu(instr: Instruction, op: (Long, Long) => Boolean) = {
@@ -281,7 +281,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   private def cmpui(instr: Instruction, op: (Long, Long) => Boolean) = {
-    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & instr.imm16.toShort)) 1 else 0
+    reg.sr.f = if (op(0xFFFFFFFFL & reg.gpCtx(instr.regA), 0xFFFFFFFFL & ((instr.imm16 << 16) >> 16))) 1 else 0
   }
 
   def sfeq(instr: Instruction) = cmps(instr, _ == _)
@@ -325,7 +325,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   def sfnei(instr: Instruction) = cmpsi(instr, _ != _)
 
   def sh(instr: Instruction): Unit = {
-    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + ((instr.imm16_split << 16) >> 16)
     mmu.setShort(ea, reg.gpCtx(instr.regB).toShort)
   }
 
@@ -366,14 +366,14 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def sw(instr: Instruction): Unit = {
-    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + ((instr.imm16_split << 16) >> 16)
     try mmu.setInt(ea, reg.gpCtx(instr.regB)) catch {
       case e: IndexOutOfBoundsException => throw new IllegalMemoryAccessException(s"Attempted to access location ${ea.formatted("%08x")}", e)
     }
   }
 
   def swa(instr: Instruction): Unit = {
-    val ea = reg.gpCtx(instr.regA) + instr.imm16_split.toShort
+    val ea = reg.gpCtx(instr.regA) + ((instr.imm16_split << 16) >> 16)
     mmu.setInt(ea, reg.gpCtx(instr.regB))
   }
 
@@ -412,6 +412,6 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def xori(instr: Instruction) = {
-    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) ^ instr.imm16.toShort
+    reg.gpCtx(instr.regD) = reg.gpCtx(instr.regA) ^ ((instr.imm16 << 16) >> 16)
   }
 }
