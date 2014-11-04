@@ -5,10 +5,12 @@
 -libraryjars /Users/pwootage/Applications/scala-2.11.2/lib/scala-library.jar
 
 -target 1.6
--optimizationpasses 9
+-optimizationpasses 20
 -allowaccessmodification
 -dontobfuscate
--printseeds
+-printseeds seeds.txt
+-printusage usage.txt
+-whyareyoukeeping class com.pwootage.**
 
 
 # Keep - Applications. Keep all application classes, along with their 'main'

@@ -94,10 +94,10 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Bnf) = instructions.bnf _
   opcodeLookupTable(L.Bf) = instructions.bf _
   opcodeLookupTable(L.Movhi) = instructions.movhi _
-  opcodeLookupTable(L.Sys._1) = { instr: Instruction =>
+  opcodeLookupTable(L.Sys) = { instr: Instruction =>
     instr.opcode16 match {
-      case L.Sys._2 => instructions.sys(instr)
-      case L.Trp._2 => instructions.trp(instr)
+      case L.Sys2 => instructions.sys(instr)
+      case L.Trp2 => instructions.trp(instr)
       case _ => throw new IllegalInstructionException("Invalid opcode16: " + instr.opcode16)
     }
   }
@@ -119,27 +119,27 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Xori) = instructions.xori _
   opcodeLookupTable(L.Muli) = instructions.muli _
   opcodeLookupTable(L.Mfspr) = instructions.mfspr _
-  opcodeLookupTable(L.Rori._1) = { instr: Instruction =>
+  opcodeLookupTable(L.Rori) = { instr: Instruction =>
     instr.opcode2_bit6 match {
-      case L.Slli._2 => instructions.slli(instr)
-      case L.Srai._2 => instructions.srai(instr)
-      case L.Srli._2 => instructions.srli(instr)
-      case L.Rori._2 => instructions.rori(instr)
+      case L.Slli2 => instructions.slli(instr)
+      case L.Srai2 => instructions.srai(instr)
+      case L.Srli2 => instructions.srli(instr)
+      case L.Rori2 => instructions.rori(instr)
       case _ => throw new IllegalInstructionException("Invalid add opcode2_bitb: " + instr.opcode2_bit6)
     }
   }
-  opcodeLookupTable(L.Sfeqi._1) = { instr: Instruction =>
+  opcodeLookupTable(L.Sfeqi) = { instr: Instruction =>
     instr.regD match {
-      case L.Sfeqi._2 => instructions.sfeqi(instr)
-      case L.Sfnei._2 => instructions.sfnei(instr)
-      case L.Sfgtui._2 => instructions.sfgtui(instr)
-      case L.Sfgeui._2 => instructions.sfgeui(instr)
-      case L.Sfltui._2 => instructions.sfltui(instr)
-      case L.Sfleui._2 => instructions.sfleui(instr)
-      case L.Sfgtsi._2 => instructions.sfgtsi(instr)
-      case L.Sfgesi._2 => instructions.sfgesi(instr)
-      case L.Sfltsi._2 => instructions.sfltsi(instr)
-      case L.Sflesi._2 => instructions.sflesi(instr)
+      case L.Sfeqi2 => instructions.sfeqi(instr)
+      case L.Sfnei2 => instructions.sfnei(instr)
+      case L.Sfgtui2 => instructions.sfgtui(instr)
+      case L.Sfgeui2 => instructions.sfgeui(instr)
+      case L.Sfltui2 => instructions.sfltui(instr)
+      case L.Sfleui2 => instructions.sfleui(instr)
+      case L.Sfgtsi2 => instructions.sfgtsi(instr)
+      case L.Sfgesi2 => instructions.sfgesi(instr)
+      case L.Sfltsi2 => instructions.sfltsi(instr)
+      case L.Sflesi2 => instructions.sflesi(instr)
       case _ => throw new IllegalInstructionException("Invalid set flag immediate opcode: " + instr.regD)
     }
   }
@@ -148,50 +148,50 @@ class OR1K(val reg: Registers, val mmu: MMU) {
   opcodeLookupTable(L.Sw) = instructions.sw _
   opcodeLookupTable(L.Sb) = instructions.sb _
   opcodeLookupTable(L.Sh) = instructions.sh _
-  opcodeLookupTable(L.Add._1) = { instr: Instruction =>
+  opcodeLookupTable(L.Add) = { instr: Instruction =>
     //TODO: Scala is bad at constant inlining and I probably should manually inline them
     //ie there is one method call per case -.-
     instr.opcode4 match {
-      case L.Add._3 => instructions.add(instr)
-      case L.Addc._3 => instructions.addc(instr)
-      case L.Sub._3 => instructions.sub(instr)
-      case L.And._3 => instructions.and(instr)
-      case L.Or._3 => instructions.or(instr)
-      case L.Xor._3 => instructions.xor(instr)
-      case L.Mul._3 => instructions.mul(instr)
-      case L.Sll._3 => instr.opcode2 match {
-        case L.Sll._2 => instructions.sll(instr)
-        case L.Sra._2 => instructions.sra(instr)
-        case L.Srl._2 => instructions.srl(instr)
-        case L.Ror._2 => instructions.ror(instr)
+      case L.Add3 => instructions.add(instr)
+      case L.Addc3 => instructions.addc(instr)
+      case L.Sub3 => instructions.sub(instr)
+      case L.And3 => instructions.and(instr)
+      case L.Or3 => instructions.or(instr)
+      case L.Xor3 => instructions.xor(instr)
+      case L.Mul3 => instructions.mul(instr)
+      case L.Sll3 => instr.opcode2 match {
+        case L.Sll2 => instructions.sll(instr)
+        case L.Sra2 => instructions.sra(instr)
+        case L.Srl2 => instructions.srl(instr)
+        case L.Ror2 => instructions.ror(instr)
       }
-      case L.Div._3 => instructions.div(instr)
-      case L.Mulu._3 => instructions.mulu(instr)
-      case L.Exths._3 => instr.opcode2 match {
-        case L.Exths._2 => instructions.exths(instr)
-        case L.Extbs._2 => instructions.extbs(instr)
-        case L.Exthz._2 => instructions.exthz(instr)
-        case L.Extbz._2 => instructions.extbz(instr)
+      case L.Div3 => instructions.div(instr)
+      case L.Mulu3 => instructions.mulu(instr)
+      case L.Exths3 => instr.opcode2 match {
+        case L.Exths2 => instructions.exths(instr)
+        case L.Extbs2 => instructions.extbs(instr)
+        case L.Exthz2 => instructions.exthz(instr)
+        case L.Extbz2 => instructions.extbz(instr)
       }
-      case L.Divu._3 => instructions.divu(instr)
-      case L.Cmov._3 => instructions.cmov(instr)
+      case L.Divu3 => instructions.divu(instr)
+      case L.Cmov3 => instructions.cmov(instr)
       case _ => throw new IllegalInstructionException("Invalid add opcode4: " + instr.opcode4)
     }
   }
 
-  opcodeLookupTable(L.Sfeq._1) = { instr: Instruction =>
+  opcodeLookupTable(L.Sfeq) = { instr: Instruction =>
     //This is actually an opcode but hey, it's the right place
     instr.regD match {
-      case L.Sfeq._2 => instructions.sfeq(instr)
-      case L.Sfne._2 => instructions.sfne(instr)
-      case L.Sfgtu._2 => instructions.sfgtu(instr)
-      case L.Sfgeu._2 => instructions.sfgeu(instr)
-      case L.Sfltu._2 => instructions.sfltu(instr)
-      case L.Sfl3u._2 => instructions.sfleu(instr)
-      case L.Sfgts._2 => instructions.sfgts(instr)
-      case L.Sfges._2 => instructions.sfges(instr)
-      case L.Sflts._2 => instructions.sflts(instr)
-      case L.Sfles._2 => instructions.sfles(instr)
+      case L.Sfeq2 => instructions.sfeq(instr)
+      case L.Sfne2 => instructions.sfne(instr)
+      case L.Sfgtu2 => instructions.sfgtu(instr)
+      case L.Sfgeu2 => instructions.sfgeu(instr)
+      case L.Sfltu2 => instructions.sfltu(instr)
+      case L.Sfl3u2 => instructions.sfleu(instr)
+      case L.Sfgts2 => instructions.sfgts(instr)
+      case L.Sfges2 => instructions.sfges(instr)
+      case L.Sflts2 => instructions.sflts(instr)
+      case L.Sfles2 => instructions.sfles(instr)
       case _ => throw new IllegalInstructionException("Invalid set flag opcode: " + instr.regD)
     }
   }

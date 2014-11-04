@@ -28,9 +28,9 @@ import com.pwootage.sor1k.test.instructions.InterpretedInstructionFixtures._
 class RorSpec extends BaseSpec {
 
   val instr = new Instruction(
-    opcode = L.Ror._1,
-    opcode2 =  L.Ror._2,
-    opcode4 =  L.Ror._3,
+    opcode = L.Ror,
+    opcode2 =  L.Ror2,
+    opcode4 =  L.Ror3,
     regA = 1,
     regB = 2,
     regD = 3
