@@ -2,3 +2,5 @@ target/
 .idea/
 seeds.txt
 usage.txt
+proguard.out.txt
+disassembled/

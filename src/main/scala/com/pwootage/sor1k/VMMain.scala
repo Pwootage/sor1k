@@ -61,10 +61,10 @@ object VMMain {
         //        println(s"Breakpoint @ $steps!")
         //      }
         cpu.executeStep()
-        if (steps % 10000 == 0) {
-          //        println(s"Executed $steps instructions")
-          //        cpu.dumpRegistersAndInstruction()
-        }
+        //        if (steps % 10000 == 0) {
+        //        println(s"Executed $steps instructions")
+        //        cpu.dumpRegistersAndInstruction()
+        //        }
       }
     } catch {
       case e: Throwable => {
