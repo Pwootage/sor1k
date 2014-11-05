@@ -1,5 +1,7 @@
 name := "sor1k"
 
+organization := "com.pwootage"
+
 version := "1.0a"
 
 scalaVersion := "2.11.2"
