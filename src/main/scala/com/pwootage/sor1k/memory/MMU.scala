@@ -54,7 +54,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def getByte(location: Int) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).getByte(location & 0xFFFFF)
     } else {
       mainMemory.get(location)
     }
@@ -63,7 +66,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def getShort(location: Int) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).getShort(location & 0xFFFFF)
     } else {
       mainMemory.getShort(location)
     }
@@ -72,7 +78,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def getInt(location: Int) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).getInt(location & 0xFFFFF)
     } else {
       mainMemory.getInt(location)
     }
@@ -81,7 +90,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def setByte(location: Int, value: Byte) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).setByte(location & 0xFFFFF, value)
     } else {
       mainMemory.put(location, value)
     }
@@ -90,7 +102,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def setShort(location: Int, value: Short) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).setShort(location & 0xFFFFF, value)
     } else {
       mainMemory.putShort(location, value)
     }
@@ -99,7 +114,10 @@ class MMU(val reg: Registers, buff: ByteBuffer) extends MemoryAccess {
   override def setInt(location: Int, value: Int) = {
     if (location < 0) {
       val devid = (location & 0x0FF00000) >> 20
-      throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      if (devices(devid) == null) {
+        throw new IllegalMemoryAccessException(s"Attempted to access device $devid")
+      }
+      devices(devid).setInt(location & 0xFFFFF, value)
     } else {
       mainMemory.putInt(location, value)
     }
