@@ -2,7 +2,9 @@ name := "sor1k"
 
 organization := "com.pwootage"
 
-version := "1.0a"
+version := "1.0b-SNAPSHOT"
+
+isSnapshot := true
 
 scalaVersion := "2.11.2"
 

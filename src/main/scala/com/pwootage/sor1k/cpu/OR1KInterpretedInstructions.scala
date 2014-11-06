@@ -382,29 +382,7 @@ class OR1KInterpretedInstructions(or1k: OR1K) {
   }
 
   def trp(instr: Int): Unit = {
-    I.imm16(instr) match {
-      case 0x1 => {
-        nop(0)
-      }
-      case 0x2 => print("0x" + reg.gp(3).toHexString)
-      case 0x3 => print(String.valueOf(reg.gp(3).toChar))
-      case 0x10 => {
-        val memStart = reg.gp(3)
-        val cols = 4 * 8 //16 bytes
-        val rows = 16
-        for (i <- 0 until rows) {
-          print("0x" + (memStart + i * cols).formatted("%08x") + ": ")
-          for (j <- 0 until cols) {
-            if (j % 2 == 0) print(" ")
-            if (j % 4 == 0) print(" ")
-            print(mmu.getByte(memStart + i * cols + j).formatted("%02x"))
-          }
-          println()
-        }
-      }
-      case 0xFF => throw new IllegalCPUStateException("Got kill command!");
-      case _ => if (reg.sr.sm == 0) or1k.except(InterruptVector.Trap, 4)
-    }
+      or1k.trap(I.imm16(instr))
   }
 
   def xor(instr: Int) = {

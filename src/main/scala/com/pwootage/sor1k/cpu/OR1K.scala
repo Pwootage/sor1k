@@ -20,10 +20,11 @@
 
 package com.pwootage.sor1k.cpu
 
-import com.pwootage.sor1k.{CPUException, IllegalInstructionException}
+import com.pwootage.sor1k.{IllegalCPUStateException, CPUException, IllegalInstructionException}
 import com.pwootage.sor1k.cpu.InstructionCodes._
 import com.pwootage.sor1k.memory.MMU
 import com.pwootage.sor1k.registers.Registers
+import scala.collection.mutable
 
 /**
  * CPU core for OpenRisc 1000
@@ -31,6 +32,7 @@ import com.pwootage.sor1k.registers.Registers
 class OR1K(val reg: Registers, val mmu: MMU) {
   //  val instructions = new OR1KInterpretedInstructions(this)
   val instructions = new FastOR1KInterpretedInstructions(this)
+  val trapHandlers = mutable.Map[Int, OR1K => Any]()
 
   /** Indicates whether the CPU should execute a delay slot before going to NPC */
   var delaySlot = false
@@ -49,6 +51,38 @@ class OR1K(val reg: Registers, val mmu: MMU) {
     reg.sr.tee = 0
     reg.npc = vector
     delaySlot = false
+  }
+
+  def trap(i: Int): Unit = {
+    i match {
+      case 0x1 => {
+        instructions.nop(0)
+      }
+      //      case 0x2 => print("0x" + reg.gp(3).toHexString)
+      //      case 0x3 => print(String.valueOf(reg.gp(3).toChar))
+      //      case 0x10 =>
+      //        val memStart = reg.gp(3)
+      //        val cols = 4 * 8 //16 bytes
+      //        val rows = 16
+      //        for (i <- 0 until rows) {
+      //          print("0x" + (memStart + i * cols).formatted("%08x") + ": ")
+      //          for (j <- 0 until cols) {
+      //            if (j % 2 == 0) print(" ")
+      //            if (j % 4 == 0) print(" ")
+      //            print(mmu.getByte(memStart + i * cols + j).formatted("%02x"))
+      //          }
+      //          println()
+      //        }
+      case 0xFFFF => throw new IllegalCPUStateException("Got kill command!");
+      case _ => trapHandlers.get(i) match {
+        case Some(x) => x(this)
+        case None => except(InterruptVector.Trap, 4)
+      }
+    }
+  }
+
+  def registerTrap(trap: Int)(code: OR1K => Any): Unit = {
+    trapHandlers.put(trap, code)
   }
 
   def executeStep(): Unit = {
