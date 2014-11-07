@@ -25,15 +25,15 @@ package com.pwootage.sor1k.memory
  */
 abstract class ByteMemoryAccess extends MemoryAccess {
   override def getShort(location: Int): Short = {
-    ((getByte(location) << 8) |
-      getByte(location + 1)).toShort
+    (((getByte(location).toInt & 0xFF) << 8) |
+      getByte(location + 1).toInt & 0xFF).toShort
   }
 
   override def getInt(location: Int): Int = {
     ((getByte(location).toInt & 0xFF) << 24) |
       ((getByte(location + 1).toInt & 0xFF) << 16) |
       ((getByte(location + 2).toInt & 0xFF) << 8) |
-      getByte(location + 3).toInt & 0xFF)
+      getByte(location + 3).toInt & 0xFF
   }
 
   override def setShort(location: Int, value: Short): Unit = {
